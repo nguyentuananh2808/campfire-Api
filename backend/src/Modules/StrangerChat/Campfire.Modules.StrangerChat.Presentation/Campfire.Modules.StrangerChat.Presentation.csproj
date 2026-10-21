@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="..\Campfire.Modules.StrangerChat.Application\Campfire.Modules.StrangerChat.Application.csproj" /></ItemGroup><ItemGroup><PackageReference Include="MediatR" /><PackageReference Include="FluentValidation" /><FrameworkReference Include="Microsoft.AspNetCore.App" /></ItemGroup></Project>

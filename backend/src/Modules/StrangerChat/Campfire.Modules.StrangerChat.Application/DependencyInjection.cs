@@ -1,0 +1,3 @@
+using Campfire.Modules.StrangerChat.Application.Common; using Campfire.Modules.StrangerChat.Application.UseCases; using FluentValidation; using Microsoft.Extensions.DependencyInjection;
+namespace Campfire.Modules.StrangerChat.Application;
+public static class DependencyInjection { public static IServiceCollection AddStrangerChatApplication(this IServiceCollection services) { services.AddValidatorsFromAssemblyContaining<CreateSessionCommandValidator>(); services.AddMediatR(x => { x.RegisterServicesFromAssemblyContaining<CreateSessionCommand>(); x.AddOpenBehavior(typeof(ValidationBehavior<,>)); }); return services; } }

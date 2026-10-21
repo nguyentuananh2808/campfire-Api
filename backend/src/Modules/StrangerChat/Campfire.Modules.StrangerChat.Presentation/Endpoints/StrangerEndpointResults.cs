@@ -1,0 +1,3 @@
+using Campfire.Modules.StrangerChat.Application.Common; using Microsoft.AspNetCore.Http;
+namespace Campfire.Modules.StrangerChat.Presentation.Endpoints;
+public static class StrangerEndpointResults { public static IResult Failure<T>(StrangerResult<T> result,HttpContext context)=>Results.Problem(statusCode:result.Failure!.StatusCode,title:"Không thể thực hiện thao tác.",detail:result.Failure.Message,extensions:new Dictionary<string,object?>{{"code",result.Failure.Code},{"traceId",context.TraceIdentifier}}); public static IResult Missing(HttpContext context)=>Results.Problem(statusCode:401,title:"Phiên khách không hợp lệ.",extensions:new Dictionary<string,object?>{{"code","guest_session_invalid"},{"traceId",context.TraceIdentifier}}); }

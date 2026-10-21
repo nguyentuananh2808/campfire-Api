@@ -1,0 +1,63 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Campfire.BuildingBlocks.Application/Campfire.BuildingBlocks.Application.csproj" />
+    <Project Path="src/BuildingBlocks/Campfire.BuildingBlocks.Domain/Campfire.BuildingBlocks.Domain.csproj" />
+    <Project Path="src/BuildingBlocks/Campfire.BuildingBlocks.Infrastructure/Campfire.BuildingBlocks.Infrastructure.csproj" />
+    <Project Path="src/BuildingBlocks/Campfire.BuildingBlocks.Presentation/Campfire.BuildingBlocks.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Host/">
+    <Project Path="src/Host/Campfire.Api/Campfire.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Chat/">
+    <Project Path="src/Modules/Chat/Campfire.Modules.Chat.Application/Campfire.Modules.Chat.Application.csproj" />
+    <Project Path="src/Modules/Chat/Campfire.Modules.Chat.Contracts/Campfire.Modules.Chat.Contracts.csproj" />
+    <Project Path="src/Modules/Chat/Campfire.Modules.Chat.Domain/Campfire.Modules.Chat.Domain.csproj" />
+    <Project Path="src/Modules/Chat/Campfire.Modules.Chat.Infrastructure/Campfire.Modules.Chat.Infrastructure.csproj" />
+    <Project Path="src/Modules/Chat/Campfire.Modules.Chat.Presentation/Campfire.Modules.Chat.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Events/">
+    <Project Path="src/Modules/Events/Campfire.Modules.Events.Application/Campfire.Modules.Events.Application.csproj" />
+    <Project Path="src/Modules/Events/Campfire.Modules.Events.Contracts/Campfire.Modules.Events.Contracts.csproj" />
+    <Project Path="src/Modules/Events/Campfire.Modules.Events.Domain/Campfire.Modules.Events.Domain.csproj" />
+    <Project Path="src/Modules/Events/Campfire.Modules.Events.Infrastructure/Campfire.Modules.Events.Infrastructure.csproj" />
+    <Project Path="src/Modules/Events/Campfire.Modules.Events.Presentation/Campfire.Modules.Events.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Groups/">
+    <Project Path="src/Modules/Groups/Campfire.Modules.Groups.Application/Campfire.Modules.Groups.Application.csproj" />
+    <Project Path="src/Modules/Groups/Campfire.Modules.Groups.Contracts/Campfire.Modules.Groups.Contracts.csproj" />
+    <Project Path="src/Modules/Groups/Campfire.Modules.Groups.Domain/Campfire.Modules.Groups.Domain.csproj" />
+    <Project Path="src/Modules/Groups/Campfire.Modules.Groups.Infrastructure/Campfire.Modules.Groups.Infrastructure.csproj" />
+    <Project Path="src/Modules/Groups/Campfire.Modules.Groups.Presentation/Campfire.Modules.Groups.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Identity/">
+    <Project Path="src/Modules/Identity/Campfire.Modules.Identity.Application/Campfire.Modules.Identity.Application.csproj" />
+    <Project Path="src/Modules/Identity/Campfire.Modules.Identity.Contracts/Campfire.Modules.Identity.Contracts.csproj" />
+    <Project Path="src/Modules/Identity/Campfire.Modules.Identity.Domain/Campfire.Modules.Identity.Domain.csproj" />
+    <Project Path="src/Modules/Identity/Campfire.Modules.Identity.Infrastructure/Campfire.Modules.Identity.Infrastructure.csproj" />
+    <Project Path="src/Modules/Identity/Campfire.Modules.Identity.Presentation/Campfire.Modules.Identity.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Werewolf/">
+    <Project Path="src/Modules/Werewolf/Campfire.Modules.Werewolf.Application/Campfire.Modules.Werewolf.Application.csproj" />
+    <Project Path="src/Modules/Werewolf/Campfire.Modules.Werewolf.Contracts/Campfire.Modules.Werewolf.Contracts.csproj" />
+    <Project Path="src/Modules/Werewolf/Campfire.Modules.Werewolf.Domain/Campfire.Modules.Werewolf.Domain.csproj" />
+    <Project Path="src/Modules/Werewolf/Campfire.Modules.Werewolf.Infrastructure/Campfire.Modules.Werewolf.Infrastructure.csproj" />
+    <Project Path="src/Modules/Werewolf/Campfire.Modules.Werewolf.Presentation/Campfire.Modules.Werewolf.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/StrangerChat/">
+    <Project Path="src/Modules/StrangerChat/Campfire.Modules.StrangerChat.Application/Campfire.Modules.StrangerChat.Application.csproj" />
+    <Project Path="src/Modules/StrangerChat/Campfire.Modules.StrangerChat.Contracts/Campfire.Modules.StrangerChat.Contracts.csproj" />
+    <Project Path="src/Modules/StrangerChat/Campfire.Modules.StrangerChat.Domain/Campfire.Modules.StrangerChat.Domain.csproj" />
+    <Project Path="src/Modules/StrangerChat/Campfire.Modules.StrangerChat.Infrastructure/Campfire.Modules.StrangerChat.Infrastructure.csproj" />
+    <Project Path="src/Modules/StrangerChat/Campfire.Modules.StrangerChat.Presentation/Campfire.Modules.StrangerChat.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Campfire.ArchitectureTests/Campfire.ArchitectureTests.csproj" />
+    <Project Path="tests/Campfire.IntegrationTests/Campfire.IntegrationTests.csproj" />
+    <Project Path="tests/Campfire.UnitTests/Campfire.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Campfire.DbMigrator/Campfire.DbMigrator.csproj" />
+  </Folder>
+</Solution>

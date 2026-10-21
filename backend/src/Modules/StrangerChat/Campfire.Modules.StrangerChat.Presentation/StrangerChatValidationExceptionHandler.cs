@@ -1,0 +1,3 @@
+using FluentValidation; using Microsoft.AspNetCore.Diagnostics; using Microsoft.AspNetCore.Http;
+namespace Campfire.Modules.StrangerChat.Presentation;
+public sealed class StrangerChatValidationExceptionHandler : IExceptionHandler { public async ValueTask<bool> TryHandleAsync(HttpContext c,Exception e,CancellationToken ct){if(e is not ValidationException v)return false;await Results.ValidationProblem(v.Errors.GroupBy(x=>x.PropertyName).ToDictionary(x=>x.Key,x=>x.Select(y=>y.ErrorMessage).ToArray()),statusCode:400,title:"Dữ liệu không hợp lệ.",extensions:new Dictionary<string,object?>{{"code","validation_failed"},{"traceId",c.TraceIdentifier}}).ExecuteAsync(c);return true;} }

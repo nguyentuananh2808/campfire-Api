@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Campfire.Modules.Groups.Domain\Campfire.Modules.Groups.Domain.csproj" />
+    <ProjectReference Include="..\Campfire.Modules.Groups.Contracts\Campfire.Modules.Groups.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Campfire.BuildingBlocks.Application\Campfire.BuildingBlocks.Application.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="MediatR" />
+  </ItemGroup>
+</Project>

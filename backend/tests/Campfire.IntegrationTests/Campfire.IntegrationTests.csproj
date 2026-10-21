@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Host\Campfire.Api\Campfire.Api.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Identity\Campfire.Modules.Identity.Infrastructure\Campfire.Modules.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Groups\Campfire.Modules.Groups.Infrastructure\Campfire.Modules.Groups.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Chat\Campfire.Modules.Chat.Infrastructure\Campfire.Modules.Chat.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Events\Campfire.Modules.Events.Infrastructure\Campfire.Modules.Events.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Werewolf\Campfire.Modules.Werewolf.Infrastructure\Campfire.Modules.Werewolf.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\StrangerChat\Campfire.Modules.StrangerChat.Infrastructure\Campfire.Modules.StrangerChat.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><ProjectReference Include="..\Campfire.Modules.StrangerChat.Application\Campfire.Modules.StrangerChat.Application.csproj" /><ProjectReference Include="..\Campfire.Modules.StrangerChat.Domain\Campfire.Modules.StrangerChat.Domain.csproj" /></ItemGroup>
+  <ItemGroup><PackageReference Include="Microsoft.EntityFrameworkCore" /><PackageReference Include="Microsoft.EntityFrameworkCore.Design"><PrivateAssets>all</PrivateAssets></PackageReference><PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" /><PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" /><FrameworkReference Include="Microsoft.AspNetCore.App" /></ItemGroup>
+</Project>

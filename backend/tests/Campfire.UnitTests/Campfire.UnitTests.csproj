@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Modules\Identity\Campfire.Modules.Identity.Application\Campfire.Modules.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Identity\Campfire.Modules.Identity.Contracts\Campfire.Modules.Identity.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Groups\Campfire.Modules.Groups.Application\Campfire.Modules.Groups.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Groups\Campfire.Modules.Groups.Domain\Campfire.Modules.Groups.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Chat\Campfire.Modules.Chat.Domain\Campfire.Modules.Chat.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Events\Campfire.Modules.Events.Domain\Campfire.Modules.Events.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Werewolf\Campfire.Modules.Werewolf.Domain\Campfire.Modules.Werewolf.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\StrangerChat\Campfire.Modules.StrangerChat.Domain\Campfire.Modules.StrangerChat.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

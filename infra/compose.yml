@@ -1,0 +1,67 @@
+name: campfire
+
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - campfire-postgres18-data:/var/lib/postgresql
+  migrator:
+    image: campfire-api:local
+    build:
+      context: ..
+      dockerfile: backend/src/Host/Campfire.Api/Dockerfile
+    restart: "no"
+    env_file:
+      - ../.env
+    environment:
+      ConnectionStrings__Campfire: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    entrypoint: ["dotnet", "/app/migrator/Campfire.DbMigrator.dll"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  api:
+    image: campfire-api:local
+    build:
+      context: ..
+      dockerfile: backend/src/Host/Campfire.Api/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      AllowedHosts: "192.168.5.185;localhost"
+      ConnectionStrings__Campfire: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      DataProtection__KeysPath: /var/lib/campfire/data-protection-keys
+      Security__RequireHttps: "false"
+    ports:
+      - "192.168.5.185:92:8080"
+    volumes:
+      - campfire-data-protection-keys:/var/lib/campfire/data-protection-keys
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+  livekit:
+    image: livekit/livekit-server:v1.13.10
+    restart: unless-stopped
+    command: ["--bind", "0.0.0.0"]
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "50000-50020:50000-50020/udp"
+
+volumes:
+  campfire-postgres18-data:
+  campfire-data-protection-keys:

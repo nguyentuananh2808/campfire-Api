@@ -1,0 +1,6 @@
+@Campfire.Api_HostAddress = http://localhost:5174
+
+GET {{Campfire.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

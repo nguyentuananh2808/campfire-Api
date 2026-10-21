@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><ProjectReference Include="..\Campfire.Modules.StrangerChat.Domain\Campfire.Modules.StrangerChat.Domain.csproj" /><ProjectReference Include="..\Campfire.Modules.StrangerChat.Contracts\Campfire.Modules.StrangerChat.Contracts.csproj" /></ItemGroup>
+  <ItemGroup><PackageReference Include="FluentValidation" /><PackageReference Include="FluentValidation.DependencyInjectionExtensions" /><PackageReference Include="MediatR" /></ItemGroup>
+</Project>
