@@ -1,0 +1,132 @@
+name: campfire
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    env_file:
+      - ${CAMPFIRE_ENV_FILE:-.env.ec2}
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      internal:
+        ipv4_address: 172.29.0.20
+
+  migrator:
+    image: campfire-api:${CAMPFIRE_IMAGE_TAG:-latest}
+    build:
+      context: ../..
+      dockerfile: backend/src/Host/Campfire.Api/Dockerfile
+    restart: "no"
+    env_file:
+      - ${CAMPFIRE_ENV_FILE:-.env.ec2}
+    environment:
+      ConnectionStrings__Campfire: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    entrypoint: ["dotnet", "/app/migrator/Campfire.DbMigrator.dll"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  api:
+    image: campfire-api:${CAMPFIRE_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - ${CAMPFIRE_ENV_FILE:-.env.ec2}
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      AllowedHosts: "${CAMPFIRE_DOMAIN}"
+      ConnectionStrings__Campfire: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      DataProtection__KeysPath: /var/lib/campfire/data-protection-keys
+      Security__RequireHttps: "true"
+      ReverseProxy__KnownProxies__0: 172.29.0.10
+      LiveKit__PublicUrl: "wss://${CAMPFIRE_DOMAIN}/livekit"
+      LiveKit__ApiUrl: http://livekit:7880
+      LiveKit__ApiKey: "${LIVEKIT_API_KEY}"
+      LiveKit__ApiSecret: "${LIVEKIT_API_SECRET}"
+    volumes:
+      - data-protection-keys:/var/lib/campfire/data-protection-keys
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+      livekit:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://127.0.0.1:8080/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    expose:
+      - "8080"
+    networks:
+      internal:
+        ipv4_address: 172.29.0.30
+
+  livekit:
+    image: livekit/livekit-server:v1.13.10
+    restart: unless-stopped
+    command: ["--config", "/etc/livekit.yaml"]
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+    volumes:
+      - ./livekit.ec2.yaml:/etc/livekit.yaml:ro
+    ports:
+      - "7881:7881/tcp"
+      - "50000-50020:50000-50020/udp"
+    networks:
+      internal:
+        ipv4_address: 172.29.0.40
+
+  web:
+    image: campfire-web:${CAMPFIRE_IMAGE_TAG:-latest}
+    build:
+      context: ../../../web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    expose:
+      - "8080"
+    networks:
+      internal:
+        ipv4_address: 172.29.0.10
+
+  edge:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    environment:
+      CAMPFIRE_DOMAIN: "${CAMPFIRE_DOMAIN}"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+    networks:
+      - internal
+
+volumes:
+  postgres-data:
+  data-protection-keys:
+  caddy-data:
+  caddy-config:
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.0.0/24

@@ -14,6 +14,7 @@ dist/
 coverage/
 TestResults/
 .env
+.env.ec2
 *.user
 *.suo
 playwright-report/

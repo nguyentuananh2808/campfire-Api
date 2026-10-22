@@ -16,6 +16,9 @@ RUN dotnet publish backend/tools/Campfire.DbMigrator/Campfire.DbMigrator.csproj 
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:d5633778c754e89a386882eddf8dbee6942447a8a4b8267c19cf1e1158d0b0ac AS runtime
 WORKDIR /app
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=build /out/api ./api
 COPY --from=build /out/migrator ./migrator
 
