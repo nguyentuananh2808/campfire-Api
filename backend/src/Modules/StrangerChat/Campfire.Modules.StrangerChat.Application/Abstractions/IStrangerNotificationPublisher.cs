@@ -4,5 +4,6 @@ public interface IStrangerNotificationPublisher
 {
     Task MatchFoundAsync(Guid conversationId, CancellationToken cancellationToken);
     Task MessageCreatedAsync(Guid conversationId, MessageModel message, CancellationToken cancellationToken);
+    Task MessageChangedAsync(Guid conversationId, Guid messageId, CancellationToken cancellationToken);
     Task ConversationEndedAsync(Guid conversationId, CancellationToken cancellationToken);
 }

@@ -41,4 +41,19 @@ public sealed class ChatMessageTests
             "https://untrusted.example/sticker.svg",
             DateTimeOffset.UtcNow));
     }
+
+    [Fact]
+    public void Create_keeps_reply_target_and_reactions_use_allow_list()
+    {
+        var replyId = Guid.NewGuid();
+        var message = ChatMessage.Create(
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), ChatMessageKind.Text,
+            "Trả lời", replyId, DateTimeOffset.UtcNow);
+        var reaction = ChatMessageReaction.Create(message.Id, Guid.NewGuid(), "Love", DateTimeOffset.UtcNow);
+
+        Assert.Equal(replyId, message.ReplyToMessageId);
+        Assert.Equal("Love", reaction.Reaction);
+        Assert.Throws<ArgumentException>(() =>
+            ChatMessageReaction.Create(message.Id, Guid.NewGuid(), "<script>", DateTimeOffset.UtcNow));
+    }
 }

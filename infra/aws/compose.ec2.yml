@@ -59,7 +59,17 @@ services:
       livekit:
         condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://127.0.0.1:8080/health/live"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "--silent",
+          "--show-error",
+          "--header",
+          "Host: ${CAMPFIRE_DOMAIN}",
+          "http://127.0.0.1:8080/health/live",
+        ]
       interval: 15s
       timeout: 5s
       retries: 10

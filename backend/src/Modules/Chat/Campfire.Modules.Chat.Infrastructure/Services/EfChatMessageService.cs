@@ -25,6 +25,7 @@ public sealed class EfChatMessageService(
         Guid clientMessageId,
         string kind,
         string content,
+        Guid? replyToMessageId,
         CancellationToken cancellationToken)
     {
         if (!(await membershipService.GetAccessAsync(groupId, userId, cancellationToken)).IsMember)
@@ -32,9 +33,13 @@ public sealed class EfChatMessageService(
 
         var existing = await FindExistingAsync(groupId, userId, clientMessageId, cancellationToken);
         var messageKind = Enum.Parse<ChatMessageKind>(kind);
-        if (existing is not null) return await ExistingResultAsync(existing, messageKind, content, cancellationToken);
+        if (existing is not null) return await ExistingResultAsync(existing, messageKind, content, replyToMessageId, userId, cancellationToken);
 
-        var message = ChatMessage.Create(groupId, userId, clientMessageId, messageKind, content, timeProvider.GetUtcNow());
+        if (replyToMessageId.HasValue && !await dbContext.Messages.AsNoTracking()
+                .AnyAsync(message => message.Id == replyToMessageId && message.GroupId == groupId, cancellationToken))
+            return ChatResult<SendMessageResult>.Failed(ChatFailures.MessageNotFound());
+
+        var message = ChatMessage.Create(groupId, userId, clientMessageId, messageKind, content, replyToMessageId, timeProvider.GetUtcNow());
         dbContext.Messages.Add(message);
         try
         {
@@ -45,10 +50,10 @@ public sealed class EfChatMessageService(
             dbContext.ChangeTracker.Clear();
             existing = await FindExistingAsync(groupId, userId, clientMessageId, cancellationToken);
             if (existing is null) throw;
-            return await ExistingResultAsync(existing, messageKind, content, cancellationToken);
+            return await ExistingResultAsync(existing, messageKind, content, replyToMessageId, userId, cancellationToken);
         }
 
-        var dto = await ToDtoAsync(message, cancellationToken);
+        var dto = await ToDtoAsync(message, userId, cancellationToken);
         try
         {
             await notificationPublisher.PublishCreatedAsync(dto, CancellationToken.None);
@@ -87,11 +92,68 @@ public sealed class EfChatMessageService(
         if (hasMore) messages.RemoveAt(messages.Count - 1);
         if (!ascending) messages.Reverse();
 
-        var profiles = await profileReader.GetByIdsAsync(messages.Select(message => message.SenderUserId).Distinct().ToArray(), cancellationToken);
-        var items = messages.Select(message => ToDto(message, profiles)).ToArray();
+        var items = await ToDtosAsync(messages, userId, cancellationToken);
         var olderCursor = hasMore && messages.Count > 0 ? ChatCursorCodec.Encode(messages[0].SentAtUtc, messages[0].Id) : null;
         var latestCursor = messages.Count > 0 ? ChatCursorCodec.Encode(messages[^1].SentAtUtc, messages[^1].Id) : cursorText;
         return ChatResult<ChatMessagePage>.Success(new ChatMessagePage(items, olderCursor, latestCursor, hasMore));
+    }
+
+    public async Task<ChatResult<ChatMessageDto>> SetReactionAsync(
+        Guid groupId,
+        Guid messageId,
+        Guid userId,
+        string? reaction,
+        CancellationToken cancellationToken)
+    {
+        if (!(await membershipService.GetAccessAsync(groupId, userId, cancellationToken)).IsMember)
+            return ChatResult<ChatMessageDto>.Failed(ChatFailures.HiddenGroup());
+
+        var message = await dbContext.Messages.AsNoTracking()
+            .SingleOrDefaultAsync(item => item.Id == messageId && item.GroupId == groupId, cancellationToken);
+        if (message is null) return ChatResult<ChatMessageDto>.Failed(ChatFailures.MessageNotFound());
+
+        var current = await dbContext.Reactions
+            .SingleOrDefaultAsync(item => item.MessageId == messageId && item.UserId == userId, cancellationToken);
+        if (reaction is null)
+        {
+            if (current is not null) dbContext.Reactions.Remove(current);
+        }
+        else if (current is null)
+        {
+            dbContext.Reactions.Add(ChatMessageReaction.Create(messageId, userId, reaction, timeProvider.GetUtcNow()));
+        }
+        else if (current.Reaction != reaction)
+        {
+            current.Change(reaction, timeProvider.GetUtcNow());
+        }
+
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException) when (reaction is not null)
+        {
+            dbContext.ChangeTracker.Clear();
+            current = await dbContext.Reactions.SingleOrDefaultAsync(
+                item => item.MessageId == messageId && item.UserId == userId, cancellationToken);
+            if (current is null) throw;
+            if (current.Reaction != reaction)
+            {
+                current.Change(reaction, timeProvider.GetUtcNow());
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+        }
+        var dto = await ToDtoAsync(message, userId, cancellationToken);
+        try
+        {
+            await notificationPublisher.PublishChangedAsync(groupId, messageId, CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            logger.LogWarning(exception, "Realtime notification failed after reaction changed for chat message {MessageId}", messageId);
+        }
+
+        return ChatResult<ChatMessageDto>.Success(dto);
     }
 
     private Task<ChatMessage?> FindExistingAsync(Guid groupId, Guid userId, Guid clientMessageId, CancellationToken cancellationToken) =>
@@ -101,19 +163,72 @@ public sealed class EfChatMessageService(
         ChatMessage message,
         ChatMessageKind kind,
         string content,
+        Guid? replyToMessageId,
+        Guid userId,
         CancellationToken cancellationToken) =>
-        message.Kind == kind && message.Content == content
-            ? ChatResult<SendMessageResult>.Success(new SendMessageResult(await ToDtoAsync(message, cancellationToken), false))
+        message.Kind == kind && message.Content == content && message.ReplyToMessageId == replyToMessageId
+            ? ChatResult<SendMessageResult>.Success(new SendMessageResult(await ToDtoAsync(message, userId, cancellationToken), false))
             : ChatResult<SendMessageResult>.Failed(ChatFailures.IdempotencyConflict());
 
-    private async Task<ChatMessageDto> ToDtoAsync(ChatMessage message, CancellationToken cancellationToken)
+    private async Task<ChatMessageDto> ToDtoAsync(ChatMessage message, Guid userId, CancellationToken cancellationToken) =>
+        (await ToDtosAsync([message], userId, cancellationToken))[0];
+
+    private async Task<IReadOnlyList<ChatMessageDto>> ToDtosAsync(
+        IReadOnlyList<ChatMessage> messages,
+        Guid userId,
+        CancellationToken cancellationToken)
     {
-        var profiles = await profileReader.GetByIdsAsync([message.SenderUserId], cancellationToken);
-        return ToDto(message, profiles);
+        if (messages.Count == 0) return [];
+
+        var replyIds = messages.Where(message => message.ReplyToMessageId.HasValue)
+            .Select(message => message.ReplyToMessageId!.Value).Distinct().ToArray();
+        IReadOnlyList<ChatMessage> replies = replyIds.Length == 0
+            ? []
+            : await dbContext.Messages.AsNoTracking()
+                .Where(message => replyIds.Contains(message.Id)).ToListAsync(cancellationToken);
+        var messageIds = messages.Select(message => message.Id).ToArray();
+        var reactions = await dbContext.Reactions.AsNoTracking()
+            .Where(item => messageIds.Contains(item.MessageId)).ToListAsync(cancellationToken);
+        var profileIds = messages.Select(message => message.SenderUserId)
+            .Concat(replies.Select(reply => reply.SenderUserId)).Distinct().ToArray();
+        var profiles = await profileReader.GetByIdsAsync(profileIds, cancellationToken);
+        var replyLookup = replies.ToDictionary(reply => reply.Id);
+
+        return messages.Select(message =>
+        {
+            ChatReplyPreviewDto? reply = null;
+            if (message.ReplyToMessageId.HasValue && replyLookup.TryGetValue(message.ReplyToMessageId.Value, out var target))
+            {
+                reply = new ChatReplyPreviewDto(
+                    target.Id,
+                    DisplayName(target.SenderUserId, profiles),
+                    target.Kind.ToString(),
+                    Preview(target));
+            }
+
+            var messageReactions = reactions.Where(item => item.MessageId == message.Id).ToArray();
+            var summaries = messageReactions.GroupBy(item => item.Reaction)
+                .OrderBy(group => group.Key, StringComparer.Ordinal)
+                .Select(group => new ChatReactionSummaryDto(group.Key, group.Count())).ToArray();
+            return new ChatMessageDto(
+                message.Id,
+                message.GroupId,
+                message.SenderUserId,
+                DisplayName(message.SenderUserId, profiles),
+                message.ClientMessageId,
+                message.Kind.ToString(),
+                message.Content,
+                message.SentAtUtc,
+                reply,
+                summaries,
+                messageReactions.SingleOrDefault(item => item.UserId == userId)?.Reaction);
+        }).ToArray();
     }
 
-    private static ChatMessageDto ToDto(ChatMessage message, IReadOnlyDictionary<Guid, UserProfile> profiles) =>
-        new(message.Id, message.GroupId, message.SenderUserId,
-            profiles.TryGetValue(message.SenderUserId, out var profile) ? profile.DisplayName : "Thành viên",
-            message.ClientMessageId, message.Kind.ToString(), message.Content, message.SentAtUtc);
+    private static string DisplayName(Guid userId, IReadOnlyDictionary<Guid, UserProfile> profiles) =>
+        profiles.TryGetValue(userId, out var profile) ? profile.DisplayName : "Thành viên";
+
+    private static string Preview(ChatMessage message) => message.Kind is ChatMessageKind.Sticker
+        ? message.Content
+        : message.Content.Length <= 160 ? message.Content : $"{message.Content[..157]}...";
 }

@@ -10,6 +10,7 @@ public sealed class ChatMessage
         Guid clientMessageId,
         ChatMessageKind kind,
         string content,
+        Guid? replyToMessageId,
         DateTimeOffset sentAtUtc)
     {
         Id = Guid.NewGuid();
@@ -18,6 +19,7 @@ public sealed class ChatMessage
         ClientMessageId = clientMessageId;
         Kind = kind;
         Content = ValidateContent(kind, content);
+        ReplyToMessageId = replyToMessageId;
         SentAtUtc = sentAtUtc;
     }
 
@@ -27,10 +29,21 @@ public sealed class ChatMessage
     public Guid ClientMessageId { get; private set; }
     public ChatMessageKind Kind { get; private set; }
     public string Content { get; private set; } = string.Empty;
+    public Guid? ReplyToMessageId { get; private set; }
     public DateTimeOffset SentAtUtc { get; private set; }
 
     public static ChatMessage Create(Guid groupId, Guid senderUserId, Guid clientMessageId, string content, DateTimeOffset sentAtUtc) =>
-        new(groupId, senderUserId, clientMessageId, ChatMessageKind.Text, content, sentAtUtc);
+        new(groupId, senderUserId, clientMessageId, ChatMessageKind.Text, content, null, sentAtUtc);
+
+    public static ChatMessage Create(
+        Guid groupId,
+        Guid senderUserId,
+        Guid clientMessageId,
+        ChatMessageKind kind,
+        string content,
+        Guid? replyToMessageId,
+        DateTimeOffset sentAtUtc) =>
+        new(groupId, senderUserId, clientMessageId, kind, content, replyToMessageId, sentAtUtc);
 
     public static ChatMessage Create(
         Guid groupId,
@@ -39,7 +52,7 @@ public sealed class ChatMessage
         ChatMessageKind kind,
         string content,
         DateTimeOffset sentAtUtc) =>
-        new(groupId, senderUserId, clientMessageId, kind, content, sentAtUtc);
+        new(groupId, senderUserId, clientMessageId, kind, content, null, sentAtUtc);
 
     private static string ValidateContent(ChatMessageKind kind, string content)
     {

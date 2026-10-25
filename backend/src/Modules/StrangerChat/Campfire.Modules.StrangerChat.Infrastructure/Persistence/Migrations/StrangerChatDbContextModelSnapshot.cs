@@ -171,6 +171,16 @@ namespace Campfire.Modules.StrangerChat.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ConversationId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasDefaultValue("Text");
+
+                    b.Property<Guid?>("ReplyToMessageId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("SenderSessionId")
                         .HasColumnType("uuid");
 
@@ -179,12 +189,43 @@ namespace Campfire.Modules.StrangerChat.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ReplyToMessageId");
+
                     b.HasIndex("ConversationId", "SenderSessionId", "ClientMessageId")
                         .IsUnique();
 
                     b.HasIndex("ConversationId", "SentAtUtc", "Id");
 
-                    b.ToTable("messages", "stranger_chat");
+                    b.ToTable("messages", "stranger_chat", t =>
+                        {
+                            t.HasCheckConstraint("CK_messages_Kind", "\"Kind\" IN ('Text', 'Sticker')");
+                        });
+                });
+
+            modelBuilder.Entity("Campfire.Modules.StrangerChat.Domain.Entities.StrangerMessageReaction", b =>
+                {
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ReactedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Reaction")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.HasKey("MessageId", "SessionId");
+
+                    b.HasIndex("MessageId", "Reaction");
+
+                    b.ToTable("message_reactions", "stranger_chat", t =>
+                        {
+                            t.HasCheckConstraint("CK_message_reactions_Reaction", "\"Reaction\" IN ('Like', 'Love', 'Laugh', 'Wow', 'Sad')");
+                        });
                 });
 
             modelBuilder.Entity("Campfire.Modules.StrangerChat.Domain.Entities.StrangerReport", b =>
@@ -226,6 +267,23 @@ namespace Campfire.Modules.StrangerChat.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("UX_reports_conversation_reporter");
 
                     b.ToTable("reports", "stranger_chat");
+                });
+
+            modelBuilder.Entity("Campfire.Modules.StrangerChat.Domain.Entities.StrangerMessage", b =>
+                {
+                    b.HasOne("Campfire.Modules.StrangerChat.Domain.Entities.StrangerMessage", null)
+                        .WithMany()
+                        .HasForeignKey("ReplyToMessageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Campfire.Modules.StrangerChat.Domain.Entities.StrangerMessageReaction", b =>
+                {
+                    b.HasOne("Campfire.Modules.StrangerChat.Domain.Entities.StrangerMessage", null)
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

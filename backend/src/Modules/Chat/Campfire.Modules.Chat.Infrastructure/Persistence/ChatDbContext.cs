@@ -7,6 +7,7 @@ public sealed class ChatDbContext(DbContextOptions<ChatDbContext> options) : DbC
 {
     public const string Schema = "chat";
     public DbSet<ChatMessage> Messages => Set<ChatMessage>();
+    public DbSet<ChatMessageReaction> Reactions => Set<ChatMessageReaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ChatDbContext).Assembly);

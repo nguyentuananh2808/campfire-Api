@@ -23,6 +23,20 @@ public sealed class ChatApiTests(CampfireApiFactory factory) : IClassFixture<Cam
         var first = await member.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new { clientMessageId, content = "Xin chào <b>nhóm</b>" });
         var retry = await member.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new { clientMessageId, content = "Xin chào <b>nhóm</b>" });
         var conflict = await member.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new { clientMessageId, content = "Nội dung khác" });
+        var firstBody = await first.Content.ReadFromJsonAsync<JsonElement>();
+        var firstMessageId = firstBody.GetProperty("id").GetGuid();
+        var reply = await member.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new
+        {
+            clientMessageId = Guid.NewGuid(),
+            content = "Mình đồng ý",
+            replyToMessageId = firstMessageId
+        });
+        var reaction = await member.PutAsJsonAsync(
+            $"/api/v1/groups/{groupId}/messages/{firstMessageId}/reaction",
+            new { reaction = "Love" });
+        var outsiderReaction = await outsider.PutAsJsonAsync(
+            $"/api/v1/groups/{groupId}/messages/{firstMessageId}/reaction",
+            new { reaction = "Like" });
         var stickerMessageId = Guid.NewGuid();
         var sticker = await member.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new
         {
@@ -52,6 +66,11 @@ public sealed class ChatApiTests(CampfireApiFactory factory) : IClassFixture<Cam
         Assert.Equal(HttpStatusCode.Created, first.StatusCode);
         Assert.Equal(HttpStatusCode.OK, retry.StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, conflict.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, reply.StatusCode);
+        Assert.Equal(firstMessageId, (await reply.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("replyTo").GetProperty("messageId").GetGuid());
+        Assert.Equal(HttpStatusCode.OK, reaction.StatusCode);
+        Assert.Equal("Love", (await reaction.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("myReaction").GetString());
+        Assert.Equal(HttpStatusCode.NotFound, outsiderReaction.StatusCode);
         Assert.Equal(HttpStatusCode.Created, sticker.StatusCode);
         Assert.Equal(HttpStatusCode.OK, stickerRetry.StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, changedKind.StatusCode);
@@ -60,7 +79,8 @@ public sealed class ChatApiTests(CampfireApiFactory factory) : IClassFixture<Cam
         Assert.Equal(HttpStatusCode.NotFound, (await outsider.GetAsync($"/api/v1/groups/{groupId}/messages")).StatusCode);
         using var scope = factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
-        Assert.Equal(2, await dbContext.Messages.CountAsync(message => message.GroupId == groupId));
+        Assert.Equal(3, await dbContext.Messages.CountAsync(message => message.GroupId == groupId));
+        Assert.Single(await dbContext.Reactions.Where(item => item.MessageId == firstMessageId).ToListAsync());
     }
 
     private static async Task RegisterAsync(HttpClient client, string displayName)

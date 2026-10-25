@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Campfire.Modules.Chat.Application.SendMessage;
 
-public sealed record SendMessageCommand(Guid GroupId, Guid UserId, Guid ClientMessageId, string Kind, string Content)
+public sealed record SendMessageCommand(Guid GroupId, Guid UserId, Guid ClientMessageId, string Kind, string Content, Guid? ReplyToMessageId)
     : IRequest<ChatResult<SendMessageResult>>;

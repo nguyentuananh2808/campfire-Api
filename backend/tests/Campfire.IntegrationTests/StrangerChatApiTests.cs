@@ -118,6 +118,41 @@ public sealed class StrangerChatApiTests(CampfireApiFactory factory) : IClassFix
                 report.ConversationId == conversationId));
     }
 
+    [Fact]
+    public async Task Participants_can_send_sticker_reply_and_set_one_reaction()
+    {
+        using var first = factory.CreateClient();
+        using var second = factory.CreateClient();
+        await CreateSessionAsync(first, "Người A", "Other", "Any");
+        await CreateSessionAsync(second, "Người B", "Other", "Any");
+        Assert.Equal("waiting", await QueueAndReadStatusAsync(first));
+        var match = await second.PostAsJsonAsync("/api/v1/stranger/matchmaking", new { });
+        var conversationId = (await match.Content.ReadFromJsonAsync<JsonElement>())
+            .GetProperty("conversation").GetProperty("id").GetGuid();
+
+        var firstMessage = await first.PostAsJsonAsync(
+            $"/api/v1/stranger/conversations/{conversationId}/messages",
+            new { clientMessageId = Guid.NewGuid(), kind = "Sticker", content = "campfire" });
+        firstMessage.EnsureSuccessStatusCode();
+        var firstMessageId = (await firstMessage.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
+        var reply = await second.PostAsJsonAsync(
+            $"/api/v1/stranger/conversations/{conversationId}/messages",
+            new { clientMessageId = Guid.NewGuid(), kind = "Text", content = "Chào bạn", replyToMessageId = firstMessageId });
+        var reaction = await second.PutAsJsonAsync(
+            $"/api/v1/stranger/conversations/{conversationId}/messages/{firstMessageId}/reaction",
+            new { reaction = "Like" });
+
+        Assert.Equal(HttpStatusCode.OK, reply.StatusCode);
+        Assert.Equal(firstMessageId, (await reply.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("replyTo").GetProperty("messageId").GetGuid());
+        Assert.Equal(HttpStatusCode.OK, reaction.StatusCode);
+        Assert.Equal("Like", (await reaction.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("myReaction").GetString());
+
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<StrangerChatDbContext>();
+        Assert.Equal(2, await db.Messages.CountAsync(message => message.ConversationId == conversationId));
+        Assert.Single(await db.Reactions.Where(item => item.MessageId == firstMessageId).ToListAsync());
+    }
+
     private static async Task CreateSessionAsync(HttpClient client, string nickname, string gender, string preference)
     {
         await PrimeAntiforgeryAsync(client);

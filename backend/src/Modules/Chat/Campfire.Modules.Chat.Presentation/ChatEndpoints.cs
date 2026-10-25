@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Campfire.Modules.Chat.Application.GetMessages;
 using Campfire.Modules.Chat.Application.SendMessage;
+using Campfire.Modules.Chat.Application.SetReaction;
 using Campfire.Modules.Chat.Presentation.Endpoints;
 using Campfire.Modules.Chat.Presentation.Models;
 using MediatR;
@@ -19,6 +20,9 @@ public static class ChatEndpoints
         messages.MapGet("/", GetMessagesAsync).WithName("GetGroupMessages");
         messages.MapPost("/", SendMessageAsync).AddEndpointFilter<AntiforgeryEndpointFilter>()
             .RequireRateLimiting("chat").WithName("SendGroupMessage");
+        messages.MapPut("/{messageId:guid}/reaction", SetReactionAsync)
+            .AddEndpointFilter<AntiforgeryEndpointFilter>()
+            .RequireRateLimiting("chat").WithName("SetGroupMessageReaction");
         return endpoints;
     }
 
@@ -39,11 +43,20 @@ public static class ChatEndpoints
             userId,
             request.ClientMessageId,
             request.Kind ?? "Text",
-            request.Content), cancellationToken);
+            request.Content,
+            request.ReplyToMessageId), cancellationToken);
         if (!result.IsSuccess) return ChatEndpointResults.Failure(result, context);
         return result.Value!.WasCreated
             ? Results.Created($"/api/v1/groups/{groupId}/messages/{result.Value.Message.Id}", result.Value.Message)
             : Results.Ok(result.Value.Message);
+    }
+
+    private static async Task<IResult> SetReactionAsync(Guid groupId, Guid messageId, SetMessageReactionRequest request,
+        ClaimsPrincipal principal, ISender sender, HttpContext context, CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(principal, out var userId)) return ChatEndpointResults.InvalidSession(context);
+        var result = await sender.Send(new SetMessageReactionCommand(groupId, messageId, userId, request.Reaction), cancellationToken);
+        return result.IsSuccess ? Results.Ok(result.Value) : ChatEndpointResults.Failure(result, context);
     }
 
     private static bool TryGetUserId(ClaimsPrincipal principal, out Guid userId) =>

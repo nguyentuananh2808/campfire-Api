@@ -9,5 +9,5 @@ public sealed class SendMessageCommandHandler(IChatMessageService service)
     : IRequestHandler<SendMessageCommand, ChatResult<SendMessageResult>>
 {
     public Task<ChatResult<SendMessageResult>> Handle(SendMessageCommand request, CancellationToken cancellationToken) =>
-        service.SendAsync(request.GroupId, request.UserId, request.ClientMessageId, request.Kind, request.Content, cancellationToken);
+        service.SendAsync(request.GroupId, request.UserId, request.ClientMessageId, request.Kind, request.Content, request.ReplyToMessageId, cancellationToken);
 }

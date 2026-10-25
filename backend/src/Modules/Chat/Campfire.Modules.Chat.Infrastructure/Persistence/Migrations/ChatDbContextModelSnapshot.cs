@@ -46,6 +46,9 @@ namespace Campfire.Modules.Chat.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(16)")
                         .HasDefaultValue("Text");
 
+                    b.Property<Guid?>("ReplyToMessageId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("SenderUserId")
                         .HasColumnType("uuid");
 
@@ -53,6 +56,8 @@ namespace Campfire.Modules.Chat.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReplyToMessageId");
 
                     b.HasIndex("GroupId", "SenderUserId", "ClientMessageId")
                         .IsUnique();
@@ -63,6 +68,49 @@ namespace Campfire.Modules.Chat.Infrastructure.Persistence.Migrations
                         {
                             t.HasCheckConstraint("CK_Messages_Kind", "\"Kind\" IN ('Text', 'Sticker')");
                         });
+                });
+
+            modelBuilder.Entity("Campfire.Modules.Chat.Domain.Messages.ChatMessageReaction", b =>
+                {
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ReactedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Reaction")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.HasKey("MessageId", "UserId");
+
+                    b.HasIndex("MessageId", "Reaction");
+
+                    b.ToTable("MessageReactions", "chat", t =>
+                        {
+                            t.HasCheckConstraint("CK_MessageReactions_Reaction", "\"Reaction\" IN ('Like', 'Love', 'Laugh', 'Wow', 'Sad')");
+                        });
+                });
+
+            modelBuilder.Entity("Campfire.Modules.Chat.Domain.Messages.ChatMessage", b =>
+                {
+                    b.HasOne("Campfire.Modules.Chat.Domain.Messages.ChatMessage", null)
+                        .WithMany()
+                        .HasForeignKey("ReplyToMessageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Campfire.Modules.Chat.Domain.Messages.ChatMessageReaction", b =>
+                {
+                    b.HasOne("Campfire.Modules.Chat.Domain.Messages.ChatMessage", null)
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

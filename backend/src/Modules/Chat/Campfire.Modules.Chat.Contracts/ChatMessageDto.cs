@@ -8,4 +8,7 @@ public sealed record ChatMessageDto(
     Guid ClientMessageId,
     string Kind,
     string Content,
-    DateTimeOffset SentAtUtc);
+    DateTimeOffset SentAtUtc,
+    ChatReplyPreviewDto? ReplyTo,
+    IReadOnlyList<ChatReactionSummaryDto> Reactions,
+    string? MyReaction);
