@@ -45,6 +45,13 @@
     <Project Path="src/Modules/Werewolf/Campfire.Modules.Werewolf.Infrastructure/Campfire.Modules.Werewolf.Infrastructure.csproj" />
     <Project Path="src/Modules/Werewolf/Campfire.Modules.Werewolf.Presentation/Campfire.Modules.Werewolf.Presentation.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Learning/">
+    <Project Path="src/Modules/Learning/Campfire.Modules.Learning.Application/Campfire.Modules.Learning.Application.csproj" />
+    <Project Path="src/Modules/Learning/Campfire.Modules.Learning.Contracts/Campfire.Modules.Learning.Contracts.csproj" />
+    <Project Path="src/Modules/Learning/Campfire.Modules.Learning.Domain/Campfire.Modules.Learning.Domain.csproj" />
+    <Project Path="src/Modules/Learning/Campfire.Modules.Learning.Infrastructure/Campfire.Modules.Learning.Infrastructure.csproj" />
+    <Project Path="src/Modules/Learning/Campfire.Modules.Learning.Presentation/Campfire.Modules.Learning.Presentation.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/StrangerChat/">
     <Project Path="src/Modules/StrangerChat/Campfire.Modules.StrangerChat.Application/Campfire.Modules.StrangerChat.Application.csproj" />
     <Project Path="src/Modules/StrangerChat/Campfire.Modules.StrangerChat.Contracts/Campfire.Modules.StrangerChat.Contracts.csproj" />

@@ -4,6 +4,7 @@ using Campfire.Modules.Groups.Infrastructure.Persistence;
 using Campfire.Modules.Identity.Infrastructure.Persistence;
 using Campfire.Modules.Werewolf.Infrastructure.Persistence;
 using Campfire.Modules.StrangerChat.Infrastructure.Persistence;
+using Campfire.Modules.Learning.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 using var cancellationSource = new CancellationTokenSource();
@@ -33,6 +34,9 @@ try
     await using var strangerChatDbContext = new StrangerChatDbContextFactory().CreateDbContext(args);
     await strangerChatDbContext.Database.MigrateAsync(cancellationSource.Token);
     Console.WriteLine("Stranger Chat migrations applied successfully.");
+    await using var learningDbContext = new LearningDbContextFactory().CreateDbContext(args);
+    await learningDbContext.Database.MigrateAsync(cancellationSource.Token);
+    Console.WriteLine("Learning migrations applied successfully.");
     return 0;
 }
 catch (OperationCanceledException)

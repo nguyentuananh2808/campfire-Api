@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\src\Modules\Events\Campfire.Modules.Events.Domain\Campfire.Modules.Events.Domain.csproj" />
     <ProjectReference Include="..\..\src\Modules\Werewolf\Campfire.Modules.Werewolf.Domain\Campfire.Modules.Werewolf.Domain.csproj" />
     <ProjectReference Include="..\..\src\Modules\StrangerChat\Campfire.Modules.StrangerChat.Domain\Campfire.Modules.StrangerChat.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Learning\Campfire.Modules.Learning.Domain\Campfire.Modules.Learning.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,6 +10,8 @@ using Campfire.Modules.Groups.Infrastructure;
 using Campfire.Modules.Groups.Presentation;
 using Campfire.Modules.Identity.Infrastructure;
 using Campfire.Modules.Identity.Presentation;
+using Campfire.Modules.Learning.Infrastructure;
+using Campfire.Modules.Learning.Presentation;
 using Campfire.Modules.StrangerChat.Infrastructure;
 using Campfire.Modules.StrangerChat.Presentation;
 using Campfire.Modules.Werewolf.Infrastructure;
@@ -40,6 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddExceptionHandler<EventsValidationExceptionHandler>();
         services.AddExceptionHandler<WerewolfValidationExceptionHandler>();
         services.AddExceptionHandler<StrangerChatValidationExceptionHandler>();
+        services.AddExceptionHandler<LearningValidationExceptionHandler>();
         services.AddExceptionHandler<AntiforgeryExceptionHandler>();
         services.AddExceptionHandler<UnexpectedExceptionHandler>();
         services.AddOpenApi();
@@ -57,6 +60,7 @@ public static class ServiceCollectionExtensions
         services.AddEventsModule(configuration);
         services.AddWerewolfModule(configuration);
         services.AddStrangerChatModule(configuration);
+        services.AddLearningModule(configuration);
         services.AddAntiforgery(options =>
         {
             options.Cookie.Name = "Campfire.Antiforgery";

@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "campfire.buildingblocks.application": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Domain": "[1.0.0, )"
+        }
+      },
+      "campfire.buildingblocks.domain": {
+        "type": "Project"
+      },
+      "campfire.modules.learning.contracts": {
+        "type": "Project"
+      },
+      "campfire.modules.learning.domain": {
+        "type": "Project"
+      }
+    }
+  }
+}

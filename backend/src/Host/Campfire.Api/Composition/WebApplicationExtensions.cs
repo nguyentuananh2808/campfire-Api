@@ -4,6 +4,7 @@ using Campfire.Modules.Chat.Presentation;
 using Campfire.Modules.Events.Presentation;
 using Campfire.Modules.Groups.Presentation;
 using Campfire.Modules.Identity.Presentation;
+using Campfire.Modules.Learning.Presentation;
 using Campfire.Modules.StrangerChat.Infrastructure;
 using Campfire.Modules.StrangerChat.Presentation;
 using Campfire.Modules.Werewolf.Infrastructure;
@@ -58,6 +59,7 @@ public static class WebApplicationExtensions
         app.MapWerewolfHub();
         app.MapStrangerChatEndpoints();
         app.MapStrangerChatHub();
+        app.MapLearningEndpoints();
         return app;
     }
 

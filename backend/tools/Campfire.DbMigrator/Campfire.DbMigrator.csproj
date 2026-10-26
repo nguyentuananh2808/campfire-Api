@@ -7,6 +7,7 @@
     <ProjectReference Include="..\..\src\Modules\Events\Campfire.Modules.Events.Infrastructure\Campfire.Modules.Events.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Modules\Werewolf\Campfire.Modules.Werewolf.Infrastructure\Campfire.Modules.Werewolf.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Modules\StrangerChat\Campfire.Modules.StrangerChat.Infrastructure\Campfire.Modules.StrangerChat.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Learning\Campfire.Modules.Learning.Infrastructure\Campfire.Modules.Learning.Infrastructure.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

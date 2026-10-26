@@ -2,218 +2,6 @@
   "version": 2,
   "dependencies": {
     "net10.0": {
-      "Microsoft.AspNetCore.OpenApi": {
-        "type": "Direct",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "7RnQ/UKn+kK3JDLmTpW+vVqNErWthGPAVAy1aIiBzv4ucQ6g9NFvOJUuT0PHcpvcJxGVxctMxj6t+NESWMrgHQ==",
-        "dependencies": {
-          "Microsoft.OpenApi": "[2.12.0, 3.0.0)"
-        }
-      },
-      "Serilog.AspNetCore": {
-        "type": "Direct",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "a/cNa1mY4On1oJlfGG1wAvxjp5g7OEzk/Jf/nm7NF9cWoE7KlZw1GldrifUBWm9oKibHkR7Lg/l5jy3y7ACR8w==",
-        "dependencies": {
-          "Serilog": "4.3.0",
-          "Serilog.Extensions.Hosting": "10.0.0",
-          "Serilog.Formatting.Compact": "3.0.0",
-          "Serilog.Settings.Configuration": "10.0.0",
-          "Serilog.Sinks.Console": "6.1.1",
-          "Serilog.Sinks.Debug": "3.0.0",
-          "Serilog.Sinks.File": "7.0.0"
-        }
-      },
-      "Serilog.Formatting.Compact": {
-        "type": "Direct",
-        "requested": "[3.0.0, )",
-        "resolved": "3.0.0",
-        "contentHash": "wQsv14w9cqlfB5FX2MZpNsTawckN4a8dryuNGbebB/3Nh1pXnROHZov3swtu3Nj5oNG7Ba+xdu7Et/ulAUPanQ==",
-        "dependencies": {
-          "Serilog": "4.0.0"
-        }
-      },
-      "Swashbuckle.AspNetCore": {
-        "type": "Direct",
-        "requested": "[10.0.1, )",
-        "resolved": "10.0.1",
-        "contentHash": "177+JNAV5TNvy8gLCdrcWBY9n2jdkxiHQDY4vhaExeqUpKrOqDatCcm/kW3kze60GqfnZ2NobD/IKiAPOL+CEw==",
-        "dependencies": {
-          "Microsoft.Extensions.ApiDescription.Server": "10.0.0",
-          "Swashbuckle.AspNetCore.Swagger": "10.0.1",
-          "Swashbuckle.AspNetCore.SwaggerGen": "10.0.1",
-          "Swashbuckle.AspNetCore.SwaggerUI": "10.0.1"
-        }
-      },
-      "Google.Protobuf": {
-        "type": "Transitive",
-        "resolved": "3.32.1",
-        "contentHash": "HbFFRNU46e1E+qhGvwCDAO2EZ80WADqlkNqlOBYvGi7SNxwMPkTrReZgCg9/TrXwLO/n0za+AIiT2IplzqrjZw=="
-      },
-      "MediatR.Contracts": {
-        "type": "Transitive",
-        "resolved": "2.0.1",
-        "contentHash": "FYv95bNT4UwcNA+G/J1oX5OpRiSUxteXaUt2BJbRSdRNiIUNbggJF69wy6mnk2wYToaanpdXZdCwVylt96MpwQ=="
-      },
-      "Microsoft.EntityFrameworkCore.Abstractions": {
-        "type": "Transitive",
-        "resolved": "10.0.12",
-        "contentHash": "kDrux7T6C3V/YYYe2LXr7x6AEsVyq5Y2YoTE9er1SwbDtap3z1g8RgxNh5eKQVyB4T+DKvBBJ4Ezd/VZzJQJZg=="
-      },
-      "Microsoft.EntityFrameworkCore.Analyzers": {
-        "type": "Transitive",
-        "resolved": "10.0.12",
-        "contentHash": "Kd4o2oO1A6dfKxjz5LS16QyLtpCFTUiFWwmBABETAXRsSImBdRdWeKjSgbbRhAMiV3a3/nWr95ZtzClT4uaADQ=="
-      },
-      "Microsoft.EntityFrameworkCore.Relational": {
-        "type": "Transitive",
-        "resolved": "10.0.12",
-        "contentHash": "OiHmr8XzX96dbgMsYGe8qoqg4KxibdZG2r0QUVJBGktFInOp8IrABe8jvcbo5hrqeWfbwpK7fCEBiEPbY/ik4A==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.12"
-        }
-      },
-      "Microsoft.Extensions.ApiDescription.Server": {
-        "type": "Transitive",
-        "resolved": "10.0.0",
-        "contentHash": "NCWCGiwRwje8773yzPQhvucYnnfeR+ZoB1VRIrIMp4uaeUNw7jvEPHij3HIbwCDuNCrNcphA00KSAR9yD9qmbg=="
-      },
-      "Microsoft.Extensions.DependencyModel": {
-        "type": "Transitive",
-        "resolved": "10.0.0",
-        "contentHash": "RFYJR7APio/BiqdQunRq6DB+nDB6nc2qhHr77mlvZ0q0BT8PubMXN7XicmfzCbrDE/dzhBnUKBRXLTcqUiZDGg=="
-      },
-      "Microsoft.IdentityModel.Abstractions": {
-        "type": "Transitive",
-        "resolved": "8.14.0",
-        "contentHash": "iwbCpSjD3ehfTwBhtSNEtKPK0ICun6ov7Ibx6ISNA9bfwIyzI2Siwyi9eJFCJBwxowK9xcA1mj+jBWiigeqgcQ=="
-      },
-      "Microsoft.IdentityModel.JsonWebTokens": {
-        "type": "Transitive",
-        "resolved": "8.14.0",
-        "contentHash": "4jOpiA4THdtpLyMdAb24dtj7+6GmvhOhxf5XHLYWmPKF8ApEnApal1UnJsKO4HxUWRXDA6C4WQVfYyqsRhpNpQ==",
-        "dependencies": {
-          "Microsoft.IdentityModel.Tokens": "8.14.0"
-        }
-      },
-      "Microsoft.IdentityModel.Logging": {
-        "type": "Transitive",
-        "resolved": "8.14.0",
-        "contentHash": "eqqnemdW38CKZEHS6diA50BV94QICozDZEvSrsvN3SJXUFwVB9gy+/oz76gldP7nZliA16IglXjXTCTdmU/Ejg==",
-        "dependencies": {
-          "Microsoft.IdentityModel.Abstractions": "8.14.0"
-        }
-      },
-      "Microsoft.IdentityModel.Tokens": {
-        "type": "Transitive",
-        "resolved": "8.14.0",
-        "contentHash": "lKIZiBiGd36k02TCdMHp1KlNWisyIvQxcYJvIkz7P4gSQ9zi8dgh6S5Grj8NNG7HWYIPfQymGyoZ6JB5d1Lo1g==",
-        "dependencies": {
-          "Microsoft.IdentityModel.Logging": "8.14.0"
-        }
-      },
-      "Microsoft.OpenApi": {
-        "type": "Transitive",
-        "resolved": "2.12.0",
-        "contentHash": "0xB/be+f6qYOhvQPUrVsLrau+fkowYv6gt9RIkajMhwT7sZnqtcA797yW3bS5kgSje+AQW4xZgyLnW641YFioQ=="
-      },
-      "Newtonsoft.Json": {
-        "type": "Transitive",
-        "resolved": "13.0.4",
-        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
-      },
-      "Npgsql": {
-        "type": "Transitive",
-        "resolved": "10.0.0",
-        "contentHash": "xZAYhPOU2rUIFpV48xsqhCx9vXs6Y+0jX2LCoSEfDFYMw9jtAOUk3iQsCnDLrFIv9NT3JGMihn7nnuZsPKqJmA=="
-      },
-      "Serilog": {
-        "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "+cDryFR0GRhsGOnZSKwaDzRRl4MupvJ42FhCE4zhQRVanX0Jpg6WuCBk59OVhVDPmab1bB+nRykAnykYELA9qQ=="
-      },
-      "Serilog.Extensions.Hosting": {
-        "type": "Transitive",
-        "resolved": "10.0.0",
-        "contentHash": "E7juuIc+gzoGxgzFooFgAV8g9BfiSXNKsUok9NmEpyAXg2odkcPsMa/Yo4axkJRlh0se7mkYQ1GXDaBemR+b6w==",
-        "dependencies": {
-          "Serilog": "4.3.0",
-          "Serilog.Extensions.Logging": "10.0.0"
-        }
-      },
-      "Serilog.Extensions.Logging": {
-        "type": "Transitive",
-        "resolved": "10.0.0",
-        "contentHash": "vx0kABKl2dWbBhhqAfTOk53/i8aV/5VaT3a6il9gn72Wqs2pM7EK2OB6No6xdqK2IaY6Zf9gdjLuK9BVa2rT+Q==",
-        "dependencies": {
-          "Serilog": "4.2.0"
-        }
-      },
-      "Serilog.Settings.Configuration": {
-        "type": "Transitive",
-        "resolved": "10.0.0",
-        "contentHash": "LNq+ibS1sbhTqPV1FIE69/9AJJbfaOhnaqkzcjFy95o+4U+STsta9mi97f1smgXsWYKICDeGUf8xUGzd/52/uA==",
-        "dependencies": {
-          "Microsoft.Extensions.DependencyModel": "10.0.0",
-          "Serilog": "4.3.0"
-        }
-      },
-      "Serilog.Sinks.Console": {
-        "type": "Transitive",
-        "resolved": "6.1.1",
-        "contentHash": "8jbqgjUyZlfCuSTaJk6lOca465OndqOz3KZP6Cryt/IqZYybyBu7GP0fE/AXBzrrQB3EBmQntBFAvMVz1COvAA==",
-        "dependencies": {
-          "Serilog": "4.0.0"
-        }
-      },
-      "Serilog.Sinks.Debug": {
-        "type": "Transitive",
-        "resolved": "3.0.0",
-        "contentHash": "4BzXcdrgRX7wde9PmHuYd9U6YqycCC28hhpKonK7hx0wb19eiuRj16fPcPSVp0o/Y1ipJuNLYQ00R3q2Zs8FDA==",
-        "dependencies": {
-          "Serilog": "4.0.0"
-        }
-      },
-      "Serilog.Sinks.File": {
-        "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "fKL7mXv7qaiNBUC71ssvn/dU0k9t0o45+qm2XgKAlSt19xF+ijjxyA3R6HmCgfKEKwfcfkwWjayuQtRueZFkYw==",
-        "dependencies": {
-          "Serilog": "4.2.0"
-        }
-      },
-      "Swashbuckle.AspNetCore.Swagger": {
-        "type": "Transitive",
-        "resolved": "10.0.1",
-        "contentHash": "HJYFSP18YF1Z6LCwunL+v8wuZUzzvcjarB8AJna/NVVIpq11FH9BW/D/6abwigu7SsKRbisStmk8xu2mTsxxHg==",
-        "dependencies": {
-          "Microsoft.OpenApi": "2.3.0"
-        }
-      },
-      "Swashbuckle.AspNetCore.SwaggerGen": {
-        "type": "Transitive",
-        "resolved": "10.0.1",
-        "contentHash": "vMMBDiTC53KclPs1aiedRZnXkoI2ZgF5/JFr3Dqr8KT7wvIbA/MwD+ormQ4qf25gN5xCrJbmz/9/Z3RrpSofMA==",
-        "dependencies": {
-          "Swashbuckle.AspNetCore.Swagger": "10.0.1"
-        }
-      },
-      "Swashbuckle.AspNetCore.SwaggerUI": {
-        "type": "Transitive",
-        "resolved": "10.0.1",
-        "contentHash": "a2eLI/fCxJ3WH+H1hr7Q2T82ZBk20FfqYBEZ9hOr3f+426ZUfGU2LxYWzOJrf5/4y6EKShmWpjJG01h3Rc+l6Q=="
-      },
-      "System.IdentityModel.Tokens.Jwt": {
-        "type": "Transitive",
-        "resolved": "8.14.0",
-        "contentHash": "EYGgN/S+HK7S6F3GaaPLFAfK0UzMrkXFyWCvXpQWFYmZln3dqtbyIO7VuTM/iIIPMzkelg8ZLlBPvMhxj6nOAA==",
-        "dependencies": {
-          "Microsoft.IdentityModel.JsonWebTokens": "8.14.0",
-          "Microsoft.IdentityModel.Tokens": "8.14.0"
-        }
-      },
       "campfire.buildingblocks.application": {
         "type": "Project",
         "dependencies": {
@@ -241,10 +29,7 @@
           "Campfire.BuildingBlocks.Application": "[1.0.0, )",
           "Campfire.Modules.Chat.Contracts": "[1.0.0, )",
           "Campfire.Modules.Chat.Domain": "[1.0.0, )",
-          "Campfire.Modules.Groups.Contracts": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "FluentValidation.DependencyInjectionExtensions": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Groups.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.chat.contracts": {
@@ -261,10 +46,7 @@
           "Campfire.Modules.Chat.Contracts": "[1.0.0, )",
           "Campfire.Modules.Chat.Domain": "[1.0.0, )",
           "Campfire.Modules.Groups.Contracts": "[1.0.0, )",
-          "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
-          "Microsoft.EntityFrameworkCore": "[10.0.12, )",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.0.12, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+          "Campfire.Modules.Identity.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.chat.presentation": {
@@ -272,9 +54,7 @@
         "dependencies": {
           "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
           "Campfire.Modules.Chat.Application": "[1.0.0, )",
-          "Campfire.Modules.Chat.Contracts": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Chat.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.events.application": {
@@ -283,10 +63,7 @@
           "Campfire.BuildingBlocks.Application": "[1.0.0, )",
           "Campfire.Modules.Events.Contracts": "[1.0.0, )",
           "Campfire.Modules.Events.Domain": "[1.0.0, )",
-          "Campfire.Modules.Groups.Contracts": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "FluentValidation.DependencyInjectionExtensions": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Groups.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.events.contracts": {
@@ -303,10 +80,7 @@
           "Campfire.Modules.Events.Contracts": "[1.0.0, )",
           "Campfire.Modules.Events.Domain": "[1.0.0, )",
           "Campfire.Modules.Groups.Contracts": "[1.0.0, )",
-          "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
-          "Microsoft.EntityFrameworkCore": "[10.0.12, )",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.0.12, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+          "Campfire.Modules.Identity.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.events.presentation": {
@@ -314,9 +88,7 @@
         "dependencies": {
           "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
           "Campfire.Modules.Events.Application": "[1.0.0, )",
-          "Campfire.Modules.Events.Contracts": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Events.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.groups.application": {
@@ -324,10 +96,7 @@
         "dependencies": {
           "Campfire.BuildingBlocks.Application": "[1.0.0, )",
           "Campfire.Modules.Groups.Contracts": "[1.0.0, )",
-          "Campfire.Modules.Groups.Domain": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "FluentValidation.DependencyInjectionExtensions": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Groups.Domain": "[1.0.0, )"
         }
       },
       "campfire.modules.groups.contracts": {
@@ -343,10 +112,7 @@
           "Campfire.Modules.Groups.Application": "[1.0.0, )",
           "Campfire.Modules.Groups.Contracts": "[1.0.0, )",
           "Campfire.Modules.Groups.Domain": "[1.0.0, )",
-          "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
-          "Microsoft.EntityFrameworkCore": "[10.0.12, )",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.0.12, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+          "Campfire.Modules.Identity.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.groups.presentation": {
@@ -354,8 +120,7 @@
         "dependencies": {
           "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
           "Campfire.Modules.Groups.Application": "[1.0.0, )",
-          "Campfire.Modules.Groups.Contracts": "[1.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Groups.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.identity.application": {
@@ -363,10 +128,7 @@
         "dependencies": {
           "Campfire.BuildingBlocks.Application": "[1.0.0, )",
           "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
-          "Campfire.Modules.Identity.Domain": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "FluentValidation.DependencyInjectionExtensions": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Identity.Domain": "[1.0.0, )"
         }
       },
       "campfire.modules.identity.contracts": {
@@ -381,11 +143,7 @@
           "Campfire.BuildingBlocks.Infrastructure": "[1.0.0, )",
           "Campfire.Modules.Identity.Application": "[1.0.0, )",
           "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
-          "Campfire.Modules.Identity.Domain": "[1.0.0, )",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.0.12, )",
-          "Microsoft.EntityFrameworkCore": "[10.0.12, )",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.0.12, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+          "Campfire.Modules.Identity.Domain": "[1.0.0, )"
         }
       },
       "campfire.modules.identity.presentation": {
@@ -393,18 +151,45 @@
         "dependencies": {
           "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
           "Campfire.Modules.Identity.Application": "[1.0.0, )",
-          "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Identity.Contracts": "[1.0.0, )"
+        }
+      },
+      "campfire.modules.learning.application": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Application": "[1.0.0, )",
+          "Campfire.Modules.Learning.Contracts": "[1.0.0, )",
+          "Campfire.Modules.Learning.Domain": "[1.0.0, )"
+        }
+      },
+      "campfire.modules.learning.contracts": {
+        "type": "Project"
+      },
+      "campfire.modules.learning.domain": {
+        "type": "Project"
+      },
+      "campfire.modules.learning.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Infrastructure": "[1.0.0, )",
+          "Campfire.Modules.Learning.Application": "[1.0.0, )",
+          "Campfire.Modules.Learning.Contracts": "[1.0.0, )",
+          "Campfire.Modules.Learning.Domain": "[1.0.0, )"
+        }
+      },
+      "campfire.modules.learning.presentation": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
+          "Campfire.Modules.Learning.Application": "[1.0.0, )",
+          "Campfire.Modules.Learning.Contracts": "[1.0.0, )"
         }
       },
       "campfire.modules.strangerchat.application": {
         "type": "Project",
         "dependencies": {
           "Campfire.Modules.StrangerChat.Contracts": "[1.0.0, )",
-          "Campfire.Modules.StrangerChat.Domain": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "FluentValidation.DependencyInjectionExtensions": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.StrangerChat.Domain": "[1.0.0, )"
         }
       },
       "campfire.modules.strangerchat.contracts": {
@@ -417,18 +202,13 @@
         "type": "Project",
         "dependencies": {
           "Campfire.Modules.StrangerChat.Application": "[1.0.0, )",
-          "Campfire.Modules.StrangerChat.Domain": "[1.0.0, )",
-          "Microsoft.EntityFrameworkCore": "[10.0.12, )",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.0.12, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+          "Campfire.Modules.StrangerChat.Domain": "[1.0.0, )"
         }
       },
       "campfire.modules.strangerchat.presentation": {
         "type": "Project",
         "dependencies": {
-          "Campfire.Modules.StrangerChat.Application": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.StrangerChat.Application": "[1.0.0, )"
         }
       },
       "campfire.modules.werewolf.application": {
@@ -436,10 +216,7 @@
         "dependencies": {
           "Campfire.BuildingBlocks.Application": "[1.0.0, )",
           "Campfire.Modules.Werewolf.Contracts": "[1.0.0, )",
-          "Campfire.Modules.Werewolf.Domain": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "FluentValidation.DependencyInjectionExtensions": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
+          "Campfire.Modules.Werewolf.Domain": "[1.0.0, )"
         }
       },
       "campfire.modules.werewolf.contracts": {
@@ -455,11 +232,7 @@
           "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
           "Campfire.Modules.Werewolf.Application": "[1.0.0, )",
           "Campfire.Modules.Werewolf.Contracts": "[1.0.0, )",
-          "Campfire.Modules.Werewolf.Domain": "[1.0.0, )",
-          "Livekit.Server.Sdk.Dotnet": "[1.2.3, )",
-          "Microsoft.EntityFrameworkCore": "[10.0.12, )",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.0.12, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+          "Campfire.Modules.Werewolf.Domain": "[1.0.0, )"
         }
       },
       "campfire.modules.werewolf.presentation": {
@@ -467,83 +240,7 @@
         "dependencies": {
           "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
           "Campfire.Modules.Werewolf.Application": "[1.0.0, )",
-          "Campfire.Modules.Werewolf.Contracts": "[1.0.0, )",
-          "FluentValidation": "[12.0.0, )",
-          "MediatR": "[12.5.0, )"
-        }
-      },
-      "FluentValidation": {
-        "type": "CentralTransitive",
-        "requested": "[12.0.0, )",
-        "resolved": "12.0.0",
-        "contentHash": "8NVLxtMUXynRHJIX3Hn1ACovaqZIJASufXIIFkD0EUbcd5PmMsL1xUD5h548gCezJ5BzlITaR9CAMrGe29aWpA=="
-      },
-      "FluentValidation.DependencyInjectionExtensions": {
-        "type": "CentralTransitive",
-        "requested": "[12.0.0, )",
-        "resolved": "12.0.0",
-        "contentHash": "B28fBRL1UjhGsBC8fwV6YBZosh+SiU1FxdD7l7p5dGPgRlVI7UnM+Lgzmg+unZtV1Zxzpaw96UY2MYfMaAd8cg==",
-        "dependencies": {
-          "FluentValidation": "12.0.0"
-        }
-      },
-      "Livekit.Server.Sdk.Dotnet": {
-        "type": "CentralTransitive",
-        "requested": "[1.2.3, )",
-        "resolved": "1.2.3",
-        "contentHash": "UzqV7Qfkr+X3SypeD7L8Nm8Qipz+VNubMLk6leq/g4ANyLhInB3lNufGeJ89kg30Vmt6UDW6lzb4toAmAC+C+g==",
-        "dependencies": {
-          "Google.Protobuf": "3.32.1",
-          "Newtonsoft.Json": "13.0.4",
-          "System.IdentityModel.Tokens.Jwt": "8.14.0"
-        }
-      },
-      "MediatR": {
-        "type": "CentralTransitive",
-        "requested": "[12.5.0, )",
-        "resolved": "12.5.0",
-        "contentHash": "vqm2H8/nqL5NAJHPhsG1JOPwfkmbVrPyh4svdoRzu+uZh6Ex7PRoHBGsLYC0/RWCEJFqD1ohHNpteQvql9OktA==",
-        "dependencies": {
-          "MediatR.Contracts": "[2.0.1, 3.0.0)"
-        }
-      },
-      "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
-        "type": "CentralTransitive",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "7W/9vKC65y41W6JXwC6WSU++D43wY/ANhrm7tJdbm2lrbzNkYClja6uL3Cg69y+PJ1Q4nARb3eWs9PNMWCdYxQ==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.12"
-        }
-      },
-      "Microsoft.EntityFrameworkCore": {
-        "type": "CentralTransitive",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "e7OrVN8U5yr4kuwdTHWBHGVQIVsGfMkAr0Ej1/BnrS989Q0XBVANpIzNZ2bc1GvMZ0/XwMt5InTnmKskxGy99Q==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.12",
-          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.12"
-        }
-      },
-      "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": {
-        "type": "CentralTransitive",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "BMG8waDSju79jJGdnOPrFrpqUv9/A+Qbg43WLmqUwMgdN26ozOK5iLXVCdaXgX71TvwEGX3HWCAGy711vGAl2Q==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.12"
-        }
-      },
-      "Npgsql.EntityFrameworkCore.PostgreSQL": {
-        "type": "CentralTransitive",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "E2+uSWxSB8LdsUVwPaqRWOcGOP92biry2JEwc0KJMdLJF+aZdczeIdEXVwEyv4nSVMQJH0o8tLhyAMiR6VF0lw==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "[10.0.0, 11.0.0)",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, 11.0.0)",
-          "Npgsql": "10.0.0"
+          "Campfire.Modules.Werewolf.Contracts": "[1.0.0, )"
         }
       }
     }
