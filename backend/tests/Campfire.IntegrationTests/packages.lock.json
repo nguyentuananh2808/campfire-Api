@@ -757,6 +757,8 @@
           "Campfire.Modules.Groups.Presentation": "[1.0.0, )",
           "Campfire.Modules.Identity.Infrastructure": "[1.0.0, )",
           "Campfire.Modules.Identity.Presentation": "[1.0.0, )",
+          "Campfire.Modules.Learning.Infrastructure": "[1.0.0, )",
+          "Campfire.Modules.Learning.Presentation": "[1.0.0, )",
           "Campfire.Modules.StrangerChat.Infrastructure": "[1.0.0, )",
           "Campfire.Modules.StrangerChat.Presentation": "[1.0.0, )",
           "Campfire.Modules.Werewolf.Infrastructure": "[1.0.0, )",
@@ -947,6 +949,45 @@
           "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
           "Campfire.Modules.Identity.Application": "[1.0.0, )",
           "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
+          "MediatR": "[12.5.0, )"
+        }
+      },
+      "campfire.modules.learning.application": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Application": "[1.0.0, )",
+          "Campfire.Modules.Learning.Contracts": "[1.0.0, )",
+          "Campfire.Modules.Learning.Domain": "[1.0.0, )",
+          "FluentValidation": "[12.0.0, )",
+          "FluentValidation.DependencyInjectionExtensions": "[12.0.0, )",
+          "MediatR": "[12.5.0, )"
+        }
+      },
+      "campfire.modules.learning.contracts": {
+        "type": "Project"
+      },
+      "campfire.modules.learning.domain": {
+        "type": "Project"
+      },
+      "campfire.modules.learning.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Infrastructure": "[1.0.0, )",
+          "Campfire.Modules.Learning.Application": "[1.0.0, )",
+          "Campfire.Modules.Learning.Contracts": "[1.0.0, )",
+          "Campfire.Modules.Learning.Domain": "[1.0.0, )",
+          "Microsoft.EntityFrameworkCore": "[10.0.12, )",
+          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.0.12, )",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+        }
+      },
+      "campfire.modules.learning.presentation": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
+          "Campfire.Modules.Learning.Application": "[1.0.0, )",
+          "Campfire.Modules.Learning.Contracts": "[1.0.0, )",
+          "FluentValidation": "[12.0.0, )",
           "MediatR": "[12.5.0, )"
         }
       },
