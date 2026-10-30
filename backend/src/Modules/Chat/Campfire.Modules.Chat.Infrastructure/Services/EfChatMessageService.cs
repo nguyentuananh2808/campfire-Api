@@ -156,6 +156,49 @@ public sealed class EfChatMessageService(
         return ChatResult<ChatMessageDto>.Success(dto);
     }
 
+    public async Task<ChatResult<ChatMessageDto>> EditAsync(
+        Guid groupId,
+        Guid messageId,
+        Guid userId,
+        string content,
+        Guid expectedVersion,
+        CancellationToken cancellationToken)
+    {
+        if (!(await membershipService.GetAccessAsync(groupId, userId, cancellationToken)).IsMember)
+            return ChatResult<ChatMessageDto>.Failed(ChatFailures.HiddenGroup());
+
+        var message = await dbContext.Messages.SingleOrDefaultAsync(
+            item => item.Id == messageId && item.GroupId == groupId, cancellationToken);
+        if (message is null) return ChatResult<ChatMessageDto>.Failed(ChatFailures.MessageNotFound());
+        if (message.SenderUserId != userId || message.Kind is not ChatMessageKind.Text)
+            return ChatResult<ChatMessageDto>.Failed(ChatFailures.MessageEditForbidden());
+        if (message.Version != expectedVersion)
+            return ChatResult<ChatMessageDto>.Failed(ChatFailures.MessageEditConflict());
+
+        dbContext.Entry(message).Property(item => item.Version).OriginalValue = expectedVersion;
+        message.Edit(content, timeProvider.GetUtcNow());
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return ChatResult<ChatMessageDto>.Failed(ChatFailures.MessageEditConflict());
+        }
+
+        var dto = await ToDtoAsync(message, userId, cancellationToken);
+        try
+        {
+            await notificationPublisher.PublishChangedAsync(groupId, messageId, CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            logger.LogWarning(exception, "Realtime notification failed after chat message {MessageId} was edited", messageId);
+        }
+
+        return ChatResult<ChatMessageDto>.Success(dto);
+    }
+
     private Task<ChatMessage?> FindExistingAsync(Guid groupId, Guid userId, Guid clientMessageId, CancellationToken cancellationToken) =>
         dbContext.Messages.AsNoTracking().SingleOrDefaultAsync(message => message.GroupId == groupId && message.SenderUserId == userId && message.ClientMessageId == clientMessageId, cancellationToken);
 
@@ -219,6 +262,8 @@ public sealed class EfChatMessageService(
                 message.Kind.ToString(),
                 message.Content,
                 message.SentAtUtc,
+                message.EditedAtUtc,
+                message.Version,
                 reply,
                 summaries,
                 messageReactions.SingleOrDefault(item => item.UserId == userId)?.Reaction);

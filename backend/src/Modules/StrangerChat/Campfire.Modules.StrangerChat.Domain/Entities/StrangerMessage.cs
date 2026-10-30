@@ -4,7 +4,7 @@ public sealed class StrangerMessage
 {
     private StrangerMessage() { }
     private StrangerMessage(Guid conversationId, Guid senderSessionId, Guid clientMessageId, StrangerMessageKind kind, string content, Guid? replyToMessageId, DateTimeOffset now)
-    { Id = Guid.NewGuid(); ConversationId = conversationId; SenderSessionId = senderSessionId; ClientMessageId = clientMessageId; Kind = kind; Content = Validate(kind, content); ReplyToMessageId = replyToMessageId; SentAtUtc = now; }
+    { Id = Guid.NewGuid(); ConversationId = conversationId; SenderSessionId = senderSessionId; ClientMessageId = clientMessageId; Kind = kind; Content = Validate(kind, content); ReplyToMessageId = replyToMessageId; SentAtUtc = now; Version = Guid.NewGuid(); }
     public Guid Id { get; private set; }
     public Guid ConversationId { get; private set; }
     public Guid SenderSessionId { get; private set; }
@@ -13,6 +13,15 @@ public sealed class StrangerMessage
     public string Content { get; private set; } = string.Empty;
     public Guid? ReplyToMessageId { get; private set; }
     public DateTimeOffset SentAtUtc { get; private set; }
+    public DateTimeOffset? EditedAtUtc { get; private set; }
+    public Guid Version { get; private set; }
+    public void Edit(string content, DateTimeOffset editedAtUtc)
+    {
+        if (Kind is not StrangerMessageKind.Text) throw new InvalidOperationException("Only text messages can be edited.");
+        Content = Validate(StrangerMessageKind.Text, content).Trim();
+        EditedAtUtc = editedAtUtc;
+        Version = Guid.NewGuid();
+    }
     public static StrangerMessage Create(Guid conversationId, Guid senderSessionId, Guid clientMessageId, string content, DateTimeOffset now)
     {
         return new StrangerMessage(conversationId, senderSessionId, clientMessageId, StrangerMessageKind.Text, content, null, now);

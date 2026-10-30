@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Campfire.Modules.Chat.Application.GetMessages;
+using Campfire.Modules.Chat.Application.EditMessage;
 using Campfire.Modules.Chat.Application.SendMessage;
 using Campfire.Modules.Chat.Application.SetReaction;
 using Campfire.Modules.Chat.Presentation.Endpoints;
@@ -23,6 +24,9 @@ public static class ChatEndpoints
         messages.MapPut("/{messageId:guid}/reaction", SetReactionAsync)
             .AddEndpointFilter<AntiforgeryEndpointFilter>()
             .RequireRateLimiting("chat").WithName("SetGroupMessageReaction");
+        messages.MapPut("/{messageId:guid}", EditMessageAsync)
+            .AddEndpointFilter<AntiforgeryEndpointFilter>()
+            .RequireRateLimiting("chat").WithName("EditGroupMessage");
         return endpoints;
     }
 
@@ -56,6 +60,14 @@ public static class ChatEndpoints
     {
         if (!TryGetUserId(principal, out var userId)) return ChatEndpointResults.InvalidSession(context);
         var result = await sender.Send(new SetMessageReactionCommand(groupId, messageId, userId, request.Reaction), cancellationToken);
+        return result.IsSuccess ? Results.Ok(result.Value) : ChatEndpointResults.Failure(result, context);
+    }
+
+    private static async Task<IResult> EditMessageAsync(Guid groupId, Guid messageId, EditMessageRequest request,
+        ClaimsPrincipal principal, ISender sender, HttpContext context, CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(principal, out var userId)) return ChatEndpointResults.InvalidSession(context);
+        var result = await sender.Send(new EditMessageCommand(groupId, messageId, userId, request.Content, request.ExpectedVersion), cancellationToken);
         return result.IsSuccess ? Results.Ok(result.Value) : ChatEndpointResults.Failure(result, context);
     }
 

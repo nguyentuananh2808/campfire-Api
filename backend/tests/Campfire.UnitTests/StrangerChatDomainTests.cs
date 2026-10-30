@@ -54,4 +54,21 @@ public sealed class StrangerChatDomainTests
         Assert.Throws<ArgumentException>(() =>
             StrangerMessageReaction.Create(Guid.NewGuid(), Guid.NewGuid(), "Custom", DateTimeOffset.UtcNow));
     }
+
+    [Fact]
+    public void Message_edit_updates_text_and_rejects_stickers()
+    {
+        var message = StrangerMessage.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Ban đầu", DateTimeOffset.UtcNow);
+        var version = message.Version;
+        var editedAt = DateTimeOffset.UtcNow.AddMinutes(1);
+
+        message.Edit("  Đã sửa  ", editedAt);
+
+        Assert.Equal("Đã sửa", message.Content);
+        Assert.Equal(editedAt, message.EditedAtUtc);
+        Assert.NotEqual(version, message.Version);
+
+        var sticker = StrangerMessage.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), StrangerMessageKind.Sticker, "campfire", null, DateTimeOffset.UtcNow);
+        Assert.Throws<InvalidOperationException>(() => sticker.Edit("không hợp lệ", editedAt));
+    }
 }

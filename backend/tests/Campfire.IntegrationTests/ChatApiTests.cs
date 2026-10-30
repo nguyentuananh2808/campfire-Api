@@ -25,6 +25,13 @@ public sealed class ChatApiTests(CampfireApiFactory factory) : IClassFixture<Cam
         var conflict = await member.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new { clientMessageId, content = "Nội dung khác" });
         var firstBody = await first.Content.ReadFromJsonAsync<JsonElement>();
         var firstMessageId = firstBody.GetProperty("id").GetGuid();
+        var firstVersion = firstBody.GetProperty("version").GetGuid();
+        var edited = await member.PutAsJsonAsync(
+            $"/api/v1/groups/{groupId}/messages/{firstMessageId}",
+            new { content = "Xin chào nhóm (đã sửa)", expectedVersion = firstVersion });
+        var staleEdit = await member.PutAsJsonAsync(
+            $"/api/v1/groups/{groupId}/messages/{firstMessageId}",
+            new { content = "Bản sửa bị trễ", expectedVersion = firstVersion });
         var reply = await member.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new
         {
             clientMessageId = Guid.NewGuid(),
@@ -50,6 +57,10 @@ public sealed class ChatApiTests(CampfireApiFactory factory) : IClassFixture<Cam
             kind = "Sticker",
             content = "campfire"
         });
+        var stickerBody = await sticker.Content.ReadFromJsonAsync<JsonElement>();
+        var stickerEdit = await member.PutAsJsonAsync(
+            $"/api/v1/groups/{groupId}/messages/{stickerBody.GetProperty("id").GetGuid()}",
+            new { content = "Không được phép", expectedVersion = stickerBody.GetProperty("version").GetGuid() });
         var changedKind = await member.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new
         {
             clientMessageId = stickerMessageId,
@@ -64,6 +75,9 @@ public sealed class ChatApiTests(CampfireApiFactory factory) : IClassFixture<Cam
         });
 
         Assert.Equal(HttpStatusCode.Created, first.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, edited.StatusCode);
+        Assert.NotNull((await edited.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("editedAtUtc").GetString());
+        Assert.Equal(HttpStatusCode.Conflict, staleEdit.StatusCode);
         Assert.Equal(HttpStatusCode.OK, retry.StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, conflict.StatusCode);
         Assert.Equal(HttpStatusCode.Created, reply.StatusCode);
@@ -73,6 +87,7 @@ public sealed class ChatApiTests(CampfireApiFactory factory) : IClassFixture<Cam
         Assert.Equal(HttpStatusCode.NotFound, outsiderReaction.StatusCode);
         Assert.Equal(HttpStatusCode.Created, sticker.StatusCode);
         Assert.Equal(HttpStatusCode.OK, stickerRetry.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, stickerEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, changedKind.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, unknownSticker.StatusCode);
         Assert.Equal("Sticker", GetString(await sticker.Content.ReadAsStringAsync(), "kind"));

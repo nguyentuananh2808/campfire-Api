@@ -15,6 +15,8 @@ public sealed class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMess
             .HasDefaultValue(ChatMessageKind.Text).IsRequired();
         builder.Property(message => message.Content).HasMaxLength(2000).IsRequired();
         builder.Property(message => message.SentAtUtc).HasColumnType("timestamp with time zone");
+        builder.Property(message => message.EditedAtUtc).HasColumnType("timestamp with time zone");
+        builder.Property(message => message.Version).IsConcurrencyToken();
         builder.HasOne<ChatMessage>().WithMany().HasForeignKey(message => message.ReplyToMessageId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(message => new { message.GroupId, message.SenderUserId, message.ClientMessageId }).IsUnique();

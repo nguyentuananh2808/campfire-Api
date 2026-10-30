@@ -6,6 +6,8 @@ public sealed record MessageModel(
     string Kind,
     string Content,
     DateTimeOffset SentAtUtc,
+    DateTimeOffset? EditedAtUtc,
+    Guid Version,
     bool IsMine,
     MessageReplyModel? ReplyTo,
     IReadOnlyList<MessageReactionModel> Reactions,

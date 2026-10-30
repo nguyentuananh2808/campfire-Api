@@ -12,6 +12,7 @@ public interface IStrangerChatService
     Task<StrangerResult<MessagePage>> GetMessagesAsync(string rawToken, Guid conversationId, int limit, CancellationToken cancellationToken);
     Task<StrangerResult<MessageModel>> SendMessageAsync(string rawToken, Guid conversationId, Guid clientMessageId, string kind, string content, Guid? replyToMessageId, CancellationToken cancellationToken);
     Task<StrangerResult<MessageModel>> SetReactionAsync(string rawToken, Guid conversationId, Guid messageId, string? reaction, CancellationToken cancellationToken);
+    Task<StrangerResult<MessageModel>> EditMessageAsync(string rawToken, Guid conversationId, Guid messageId, string content, Guid expectedVersion, CancellationToken cancellationToken);
     Task<StrangerResult<bool>> EndAsync(string rawToken, Guid conversationId, bool block, CancellationToken cancellationToken);
     Task<StrangerResult<bool>> ReportAsync(string rawToken, Guid conversationId, string reason, string? note, CancellationToken cancellationToken);
     Task<Guid?> ResolveActiveConversationAsync(string rawToken, CancellationToken cancellationToken);

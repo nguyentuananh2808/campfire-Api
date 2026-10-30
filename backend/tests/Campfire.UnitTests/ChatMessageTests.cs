@@ -56,4 +56,21 @@ public sealed class ChatMessageTests
         Assert.Throws<ArgumentException>(() =>
             ChatMessageReaction.Create(message.Id, Guid.NewGuid(), "<script>", DateTimeOffset.UtcNow));
     }
+
+    [Fact]
+    public void Edit_updates_text_timestamp_and_version_but_rejects_stickers()
+    {
+        var message = ChatMessage.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Ban đầu", DateTimeOffset.UtcNow);
+        var originalVersion = message.Version;
+        var editedAt = DateTimeOffset.UtcNow.AddMinutes(1);
+
+        message.Edit("  Đã sửa  ", editedAt);
+
+        Assert.Equal("Đã sửa", message.Content);
+        Assert.Equal(editedAt, message.EditedAtUtc);
+        Assert.NotEqual(originalVersion, message.Version);
+
+        var sticker = ChatMessage.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), ChatMessageKind.Sticker, "campfire", DateTimeOffset.UtcNow);
+        Assert.Throws<InvalidOperationException>(() => sticker.Edit("không hợp lệ", editedAt));
+    }
 }

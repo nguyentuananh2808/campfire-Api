@@ -153,6 +153,42 @@ public sealed class StrangerChatApiTests(CampfireApiFactory factory) : IClassFix
         Assert.Single(await db.Reactions.Where(item => item.MessageId == firstMessageId).ToListAsync());
     }
 
+    [Fact]
+    public async Task Sender_can_edit_text_with_version_but_partner_and_stale_writer_cannot()
+    {
+        using var first = factory.CreateClient();
+        using var second = factory.CreateClient();
+        await CreateSessionAsync(first, "Người A", "Other", "Any");
+        await CreateSessionAsync(second, "Người B", "Other", "Any");
+        Assert.Equal("waiting", await QueueAndReadStatusAsync(first));
+        var match = await second.PostAsJsonAsync("/api/v1/stranger/matchmaking", new { });
+        var conversationId = (await match.Content.ReadFromJsonAsync<JsonElement>())
+            .GetProperty("conversation").GetProperty("id").GetGuid();
+        var sent = await first.PostAsJsonAsync(
+            $"/api/v1/stranger/conversations/{conversationId}/messages",
+            new { clientMessageId = Guid.NewGuid(), kind = "Text", content = "Ban đầu" });
+        var body = await sent.Content.ReadFromJsonAsync<JsonElement>();
+        var messageId = body.GetProperty("id").GetGuid();
+        var version = body.GetProperty("version").GetGuid();
+
+        var partnerEdit = await second.PutAsJsonAsync(
+            $"/api/v1/stranger/conversations/{conversationId}/messages/{messageId}",
+            new { content = "Không có quyền", expectedVersion = version });
+        var edited = await first.PutAsJsonAsync(
+            $"/api/v1/stranger/conversations/{conversationId}/messages/{messageId}",
+            new { content = "Đã sửa", expectedVersion = version });
+        var stale = await first.PutAsJsonAsync(
+            $"/api/v1/stranger/conversations/{conversationId}/messages/{messageId}",
+            new { content = "Bản cũ", expectedVersion = version });
+
+        Assert.Equal(HttpStatusCode.Forbidden, partnerEdit.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, edited.StatusCode);
+        var editedBody = await edited.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Đã sửa", editedBody.GetProperty("content").GetString());
+        Assert.NotNull(editedBody.GetProperty("editedAtUtc").GetString());
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+    }
+
     private static async Task CreateSessionAsync(HttpClient client, string nickname, string gender, string preference)
     {
         await PrimeAntiforgeryAsync(client);

@@ -111,6 +111,37 @@ public sealed class EfStrangerChatService(StrangerChatDbContext db, TimeProvider
         await notifications.MessageChangedAsync(conversationId, messageId, ct);
         return StrangerResult<MessageModel>.Success(model);
     }
+    public async Task<StrangerResult<MessageModel>> EditMessageAsync(
+        string token, Guid conversationId, Guid messageId, string content, Guid expectedVersion, CancellationToken ct)
+    {
+        var session = await Session(token, ct);
+        if (session is null) return Unauthorized<MessageModel>();
+        var conversation = await db.Conversations.SingleOrDefaultAsync(
+            item => item.Id == conversationId && (item.FirstSessionId == session.Id || item.SecondSessionId == session.Id), ct);
+        if (conversation is null || !conversation.IsActive) return NotFound<MessageModel>();
+        var message = await db.Messages.SingleOrDefaultAsync(
+            item => item.Id == messageId && item.ConversationId == conversationId, ct);
+        if (message is null) return NotFound<MessageModel>();
+        if (message.SenderSessionId != session.Id || message.Kind is not StrangerMessageKind.Text)
+            return StrangerResult<MessageModel>.Failed("message_edit_forbidden", "Bạn chỉ có thể sửa tin nhắn văn bản do chính mình gửi.", 403);
+        if (message.Version != expectedVersion)
+            return StrangerResult<MessageModel>.Failed("message_edit_conflict", "Tin nhắn đã được thay đổi. Vui lòng tải lại rồi thử lại.", 409);
+
+        db.Entry(message).Property(item => item.Version).OriginalValue = expectedVersion;
+        message.Edit(content, clock.GetUtcNow());
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return StrangerResult<MessageModel>.Failed("message_edit_conflict", "Tin nhắn đã được thay đổi. Vui lòng tải lại rồi thử lại.", 409);
+        }
+
+        var model = await ToModelAsync(message, session.Id, ct);
+        await notifications.MessageChangedAsync(conversationId, messageId, CancellationToken.None);
+        return StrangerResult<MessageModel>.Success(model);
+    }
     public async Task<StrangerResult<bool>> EndAsync(string token, Guid id, bool block, CancellationToken ct) { var s = await Session(token, ct); if (s is null) return Unauthorized<bool>(); var c = await Active(s.Id, ct); if (c?.Id != id) return NotFound<bool>(); if (block && !await db.Blocks.AnyAsync(x => x.BlockerSessionId == s.Id && x.BlockedSessionId == c.PartnerOf(s.Id), ct)) db.Blocks.Add(new StrangerBlock(s.Id, c.PartnerOf(s.Id), clock.GetUtcNow())); c.End(clock.GetUtcNow()); await db.SaveChangesAsync(ct); await notifications.ConversationEndedAsync(id, ct); return StrangerResult<bool>.Success(true); }
     public async Task<StrangerResult<bool>> ReportAsync(string token, Guid id, string reason, string? note, CancellationToken ct)
     {
@@ -193,6 +224,8 @@ public sealed class EfStrangerChatService(StrangerChatDbContext db, TimeProvider
                 message.Kind.ToString(),
                 message.Content,
                 message.SentAtUtc,
+                message.EditedAtUtc,
+                message.Version,
                 message.SenderSessionId == sessionId,
                 reply,
                 messageReactions.GroupBy(reaction => reaction.Reaction)

@@ -9,6 +9,8 @@ public sealed record ChatMessageDto(
     string Kind,
     string Content,
     DateTimeOffset SentAtUtc,
+    DateTimeOffset? EditedAtUtc,
+    Guid Version,
     ChatReplyPreviewDto? ReplyTo,
     IReadOnlyList<ChatReactionSummaryDto> Reactions,
     string? MyReaction);

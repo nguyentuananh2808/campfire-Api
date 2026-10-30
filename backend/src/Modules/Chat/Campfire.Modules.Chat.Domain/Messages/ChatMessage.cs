@@ -21,6 +21,7 @@ public sealed class ChatMessage
         Content = ValidateContent(kind, content);
         ReplyToMessageId = replyToMessageId;
         SentAtUtc = sentAtUtc;
+        Version = Guid.NewGuid();
     }
 
     public Guid Id { get; private set; }
@@ -31,6 +32,20 @@ public sealed class ChatMessage
     public string Content { get; private set; } = string.Empty;
     public Guid? ReplyToMessageId { get; private set; }
     public DateTimeOffset SentAtUtc { get; private set; }
+    public DateTimeOffset? EditedAtUtc { get; private set; }
+    public Guid Version { get; private set; }
+
+    public void Edit(string content, DateTimeOffset editedAtUtc)
+    {
+        if (Kind is not ChatMessageKind.Text)
+        {
+            throw new InvalidOperationException("Only text messages can be edited.");
+        }
+
+        Content = ValidateContent(ChatMessageKind.Text, content).Trim();
+        EditedAtUtc = editedAtUtc;
+        Version = Guid.NewGuid();
+    }
 
     public static ChatMessage Create(Guid groupId, Guid senderUserId, Guid clientMessageId, string content, DateTimeOffset sentAtUtc) =>
         new(groupId, senderUserId, clientMessageId, ChatMessageKind.Text, content, null, sentAtUtc);
