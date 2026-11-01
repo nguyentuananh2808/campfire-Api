@@ -5,6 +5,7 @@ using Campfire.Modules.Identity.Infrastructure.Persistence;
 using Campfire.Modules.Werewolf.Infrastructure.Persistence;
 using Campfire.Modules.StrangerChat.Infrastructure.Persistence;
 using Campfire.Modules.Learning.Infrastructure;
+using Campfire.Modules.Learning.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 using var cancellationSource = new CancellationTokenSource();

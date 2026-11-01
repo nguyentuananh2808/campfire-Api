@@ -43,6 +43,19 @@ public sealed class ChatMessageTests
     }
 
     [Fact]
+    public void Create_image_accepts_only_sha256_storage_keys()
+    {
+        var key = new string('a', 64);
+        var message = ChatMessage.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
+            ChatMessageKind.Image, key, DateTimeOffset.UtcNow);
+
+        Assert.Equal(ChatMessageKind.Image, message.Kind);
+        Assert.Equal(key, message.Content);
+        Assert.Throws<ArgumentException>(() => ChatMessage.Create(Guid.NewGuid(), Guid.NewGuid(),
+            Guid.NewGuid(), ChatMessageKind.Image, "../private.webp", DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
     public void Create_keeps_reply_target_and_reactions_use_allow_list()
     {
         var replyId = Guid.NewGuid();

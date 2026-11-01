@@ -12,6 +12,7 @@ using Campfire.Modules.Identity.Infrastructure;
 using Campfire.Modules.Identity.Presentation;
 using Campfire.Modules.Learning.Infrastructure;
 using Campfire.Modules.Learning.Presentation;
+using Campfire.Modules.Learning.Presentation.Errors;
 using Campfire.Modules.StrangerChat.Infrastructure;
 using Campfire.Modules.StrangerChat.Presentation;
 using Campfire.Modules.Werewolf.Infrastructure;

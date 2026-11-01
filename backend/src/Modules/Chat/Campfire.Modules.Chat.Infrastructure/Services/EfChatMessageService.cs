@@ -8,6 +8,8 @@ using Campfire.Modules.Groups.Contracts;
 using Campfire.Modules.Identity.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
 
 namespace Campfire.Modules.Chat.Infrastructure.Services;
 
@@ -17,8 +19,62 @@ public sealed class EfChatMessageService(
     IUserProfileReader profileReader,
     IChatNotificationPublisher notificationPublisher,
     TimeProvider timeProvider,
+    IConfiguration configuration,
     ILogger<EfChatMessageService> logger) : IChatMessageService
 {
+    private readonly string imageRoot = Path.Combine(
+        configuration["MediaStorage:RootPath"] ?? Path.Combine(AppContext.BaseDirectory, "media"), "chat");
+
+    public async Task<ChatResult<SendMessageResult>> SendImageAsync(Guid groupId, Guid userId,
+        Guid clientMessageId, ChatImageUpload image, Guid? replyToMessageId, CancellationToken cancellationToken)
+    {
+        if (!(await membershipService.GetAccessAsync(groupId, userId, cancellationToken)).IsMember)
+            return ChatResult<SendMessageResult>.Failed(ChatFailures.HiddenGroup());
+        if (!IsWebP(image.Bytes))
+            return ChatResult<SendMessageResult>.Failed(new ChatFailure("chat_image_invalid", "Ảnh WebP không hợp lệ.", 400));
+
+        var key = Convert.ToHexStringLower(SHA256.HashData(image.Bytes));
+        var existing = await FindExistingAsync(groupId, userId, clientMessageId, cancellationToken);
+        if (existing is not null)
+            return await ExistingResultAsync(existing, ChatMessageKind.Image, key, replyToMessageId, userId, cancellationToken);
+        if (replyToMessageId.HasValue && !await dbContext.Messages.AsNoTracking()
+                .AnyAsync(x => x.Id == replyToMessageId && x.GroupId == groupId, cancellationToken))
+            return ChatResult<SendMessageResult>.Failed(ChatFailures.MessageNotFound());
+
+        Directory.CreateDirectory(imageRoot);
+        var path = Path.Combine(imageRoot, $"{key}.webp");
+        if (!File.Exists(path)) await File.WriteAllBytesAsync(path, image.Bytes, cancellationToken);
+        var message = ChatMessage.Create(groupId, userId, clientMessageId, ChatMessageKind.Image, key,
+            replyToMessageId, timeProvider.GetUtcNow());
+        dbContext.Messages.Add(message);
+        try { await dbContext.SaveChangesAsync(cancellationToken); }
+        catch (DbUpdateException)
+        {
+            dbContext.ChangeTracker.Clear();
+            existing = await FindExistingAsync(groupId, userId, clientMessageId, cancellationToken);
+            if (existing is null) throw;
+            return await ExistingResultAsync(existing, ChatMessageKind.Image, key, replyToMessageId, userId, cancellationToken);
+        }
+        var dto = await ToDtoAsync(message, userId, cancellationToken);
+        try { await notificationPublisher.PublishCreatedAsync(dto, CancellationToken.None); }
+        catch (Exception exception) { logger.LogWarning(exception, "Realtime notification failed after image message {MessageId} was persisted", message.Id); }
+        return ChatResult<SendMessageResult>.Success(new SendMessageResult(dto, true));
+    }
+
+    public async Task<ChatResult<ChatImageContent>> GetImageAsync(Guid groupId, Guid messageId, Guid userId, CancellationToken cancellationToken)
+    {
+        if (!(await membershipService.GetAccessAsync(groupId, userId, cancellationToken)).IsMember)
+            return ChatResult<ChatImageContent>.Failed(ChatFailures.HiddenGroup());
+        var message = await dbContext.Messages.AsNoTracking().SingleOrDefaultAsync(
+            x => x.Id == messageId && x.GroupId == groupId && x.Kind == ChatMessageKind.Image, cancellationToken);
+        if (message is null) return ChatResult<ChatImageContent>.Failed(ChatFailures.MessageNotFound());
+        var path = Path.Combine(imageRoot, $"{message.Content}.webp");
+        if (!File.Exists(path)) return ChatResult<ChatImageContent>.Failed(ChatFailures.MessageNotFound());
+        return ChatResult<ChatImageContent>.Success(new ChatImageContent(await File.ReadAllBytesAsync(path, cancellationToken), "image/webp"));
+    }
+
+    private static bool IsWebP(byte[] bytes) => bytes.Length >= 12 &&
+        bytes.AsSpan(0, 4).SequenceEqual("RIFF"u8) && bytes.AsSpan(8, 4).SequenceEqual("WEBP"u8);
     public async Task<ChatResult<SendMessageResult>> SendAsync(
         Guid groupId,
         Guid userId,
@@ -260,7 +316,7 @@ public sealed class EfChatMessageService(
                 DisplayName(message.SenderUserId, profiles),
                 message.ClientMessageId,
                 message.Kind.ToString(),
-                message.Content,
+                message.Kind is ChatMessageKind.Image ? $"/api/v1/groups/{message.GroupId}/messages/{message.Id}/image" : message.Content,
                 message.SentAtUtc,
                 message.EditedAtUtc,
                 message.Version,
@@ -273,7 +329,8 @@ public sealed class EfChatMessageService(
     private static string DisplayName(Guid userId, IReadOnlyDictionary<Guid, UserProfile> profiles) =>
         profiles.TryGetValue(userId, out var profile) ? profile.DisplayName : "Thành viên";
 
-    private static string Preview(ChatMessage message) => message.Kind is ChatMessageKind.Sticker
-        ? message.Content
+    private static string Preview(ChatMessage message) => message.Kind is ChatMessageKind.Image
+        ? "Ảnh"
+        : message.Kind is ChatMessageKind.Sticker ? message.Content
         : message.Content.Length <= 160 ? message.Content : $"{message.Content[..157]}...";
 }

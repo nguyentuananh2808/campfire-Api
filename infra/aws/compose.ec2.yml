@@ -6,13 +6,19 @@ services:
     restart: unless-stopped
     env_file:
       - ${CAMPFIRE_ENV_FILE:-.env.ec2}
+
+    ports:
+      - "127.0.0.1:5432:5432"
+
     volumes:
       - postgres-data:/var/lib/postgresql
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 20
+
     networks:
       internal:
         ipv4_address: 172.29.0.20
@@ -28,9 +34,11 @@ services:
     environment:
       ConnectionStrings__Campfire: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
     entrypoint: ["dotnet", "/app/migrator/Campfire.DbMigrator.dll"]
+
     depends_on:
       postgres:
         condition: service_healthy
+
     networks:
       - internal
 
@@ -45,6 +53,7 @@ services:
       AllowedHosts: "${CAMPFIRE_DOMAIN}"
       ConnectionStrings__Campfire: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       DataProtection__KeysPath: /var/lib/campfire/data-protection-keys
+      MediaStorage__RootPath: /var/lib/campfire/media
       Security__RequireHttps: "true"
       ReverseProxy__KnownProxies__0: 172.29.0.10
       LiveKit__PublicUrl: "wss://${CAMPFIRE_DOMAIN}/livekit"
@@ -53,6 +62,7 @@ services:
       LiveKit__ApiSecret: "${LIVEKIT_API_SECRET}"
     volumes:
       - data-protection-keys:/var/lib/campfire/data-protection-keys
+      - chat-media:/var/lib/campfire/media
     depends_on:
       migrator:
         condition: service_completed_successfully
@@ -131,6 +141,7 @@ services:
 volumes:
   postgres-data:
   data-protection-keys:
+  chat-media:
   caddy-data:
   caddy-config:
 

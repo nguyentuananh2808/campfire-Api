@@ -9,7 +9,7 @@ public sealed class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMess
     public void Configure(EntityTypeBuilder<ChatMessage> builder)
     {
         builder.ToTable("Messages", ChatDbContext.Schema, table =>
-            table.HasCheckConstraint("CK_Messages_Kind", "\"Kind\" IN ('Text', 'Sticker')"));
+            table.HasCheckConstraint("CK_Messages_Kind", "\"Kind\" IN ('Text', 'Sticker', 'Image')"));
         builder.HasKey(message => message.Id);
         builder.Property(message => message.Kind).HasConversion<string>().HasMaxLength(16)
             .HasDefaultValue(ChatMessageKind.Text).IsRequired();

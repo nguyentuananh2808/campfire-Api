@@ -38,7 +38,9 @@ docker compose --env-file .env.ec2 -f compose.ec2.yml ps
 The EC2 security group should allow TCP 80/443, UDP 443, LiveKit TCP 7881 and
 UDP 50000-50020 from the Internet. Restrict TCP 22 to the administrator's IP.
 Do not expose PostgreSQL 5432 or API 8080. Persist and back up the PostgreSQL,
-Data Protection and Caddy volumes. Test restore before relying on the instance.
+Data Protection, `chat-media` and Caddy volumes. Chat images are compressed WebP
+files in `chat-media`; restoring PostgreSQL without this volume leaves image messages
+without their binary content. Test restore before relying on the instance.
 
 ## Update
 

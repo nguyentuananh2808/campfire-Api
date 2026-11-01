@@ -1,4 +1,7 @@
 using Campfire.Modules.Learning.Application;
+using Campfire.Modules.Learning.Application.Abstractions;
+using Campfire.Modules.Learning.Infrastructure.Persistence;
+using Campfire.Modules.Learning.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +15,7 @@ public static class DependencyInjection
         services.AddSingleton(TimeProvider.System);
         services.AddDbContext<LearningDbContext>(options => options.UseNpgsql(connection, x => x.MigrationsHistoryTable("__EFMigrationsHistory", LearningDbContext.Schema)));
         services.AddScoped<ILearningService, EfLearningService>();
+        services.AddScoped<ILearningTextService, LearningTextService>();
         services.AddHealthChecks().AddDbContextCheck<LearningDbContext>("learning-database");
         return services;
     }

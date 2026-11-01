@@ -1,4 +1,7 @@
 using FluentValidation;
+using Campfire.Modules.Learning.Application.Common;
+using Campfire.Modules.Learning.Application.GetMindMap;
+using Campfire.Modules.Learning.Application.GetToday;
 using Microsoft.Extensions.DependencyInjection;
 namespace Campfire.Modules.Learning.Application;
 public static class DependencyInjection

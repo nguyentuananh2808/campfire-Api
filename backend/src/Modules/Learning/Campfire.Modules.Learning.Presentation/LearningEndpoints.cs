@@ -1,5 +1,16 @@
 using System.Security.Claims;
-using Campfire.Modules.Learning.Application;
+using Campfire.Modules.Learning.Application.Common;
+using Campfire.Modules.Learning.Application.CompleteActivity;
+using Campfire.Modules.Learning.Application.GetCapabilities;
+using Campfire.Modules.Learning.Application.GetDay;
+using Campfire.Modules.Learning.Application.GetMindMap;
+using Campfire.Modules.Learning.Application.GetPath;
+using Campfire.Modules.Learning.Application.GetToday;
+using Campfire.Modules.Learning.Application.Models;
+using Campfire.Modules.Learning.Application.PrepareReadingText;
+using Campfire.Modules.Learning.Application.SubmitExercise;
+using Campfire.Modules.Learning.Presentation.Endpoints;
+using Campfire.Modules.Learning.Presentation.Models;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +30,7 @@ public static class LearningEndpoints
         group.MapPost("/activities/{activityId:guid}/submit", SubmitAsync).AddEndpointFilter<AntiforgeryEndpointFilter>().WithName("SubmitLearningExercise");
         group.MapGet("/vocabulary/mindmap", MindMapAsync).WithName("GetVocabularyMindMap");
         group.MapGet("/capabilities", CapabilitiesAsync).WithName("GetLearningCapabilities");
+        group.MapPost("/reading/prepare", PrepareReadingTextAsync).AddEndpointFilter<AntiforgeryEndpointFilter>().WithName("PrepareLearningReadingText");
         return endpoints;
     }
 
@@ -29,6 +41,7 @@ public static class LearningEndpoints
     private static async Task<IResult> SubmitAsync(Guid activityId, SubmitExerciseRequest request, ClaimsPrincipal principal, ISender sender, HttpContext context, CancellationToken token) => Result(await sender.Send(new SubmitExerciseCommand(UserId(principal), activityId, request.Answers.Select(x => new LearningModels.ExerciseAnswer(x.QuestionId, x.Value)).ToList()), token), context);
     private static async Task<IResult> MindMapAsync(string word, int? hskLevel, int? maxChildren, ClaimsPrincipal principal, ISender sender, HttpContext context, CancellationToken token) => Result(await sender.Send(new GetMindMapQuery(UserId(principal), word, hskLevel ?? 1, maxChildren ?? 8), token), context);
     private static async Task<IResult> CapabilitiesAsync(ISender sender, CancellationToken token) => Results.Ok(await sender.Send(new GetCapabilitiesQuery(), token));
+    private static async Task<IResult> PrepareReadingTextAsync(PrepareReadingTextRequest request, ISender sender, HttpContext context, CancellationToken token) => Result(await sender.Send(new PrepareReadingTextCommand(request.Text), token), context);
 
     private static Guid UserId(ClaimsPrincipal principal) => Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var value) ? value : throw new UnauthorizedAccessException("Invalid identity session.");
     private static IResult Result<T>(LearningResult<T> result, HttpContext context)

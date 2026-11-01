@@ -87,6 +87,12 @@ public sealed class ChatMessage
             throw new ArgumentException("Sticker code is not supported.", nameof(content));
         }
 
+        if (kind is ChatMessageKind.Image &&
+            (content.Length != 64 || content.Any(character => !Uri.IsHexDigit(character))))
+        {
+            throw new ArgumentException("Image storage key is invalid.", nameof(content));
+        }
+
         return content;
     }
 }

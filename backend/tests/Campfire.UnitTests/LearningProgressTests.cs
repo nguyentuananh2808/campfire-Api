@@ -1,4 +1,4 @@
-using Campfire.Modules.Learning.Domain;
+using Campfire.Modules.Learning.Domain.Progress;
 
 namespace Campfire.UnitTests;
 

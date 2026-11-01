@@ -73,7 +73,7 @@ namespace Campfire.Modules.Chat.Infrastructure.Persistence.Migrations
 
                     b.ToTable("Messages", "chat", t =>
                         {
-                            t.HasCheckConstraint("CK_Messages_Kind", "\"Kind\" IN ('Text', 'Sticker')");
+                            t.HasCheckConstraint("CK_Messages_Kind", "\"Kind\" IN ('Text', 'Sticker', 'Image')");
                         });
                 });
 
