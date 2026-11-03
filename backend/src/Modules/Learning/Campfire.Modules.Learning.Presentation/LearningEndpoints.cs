@@ -6,9 +6,13 @@ using Campfire.Modules.Learning.Application.GetDay;
 using Campfire.Modules.Learning.Application.GetMindMap;
 using Campfire.Modules.Learning.Application.GetPath;
 using Campfire.Modules.Learning.Application.GetToday;
+using Campfire.Modules.Learning.Application.GetReadingDocument;
+using Campfire.Modules.Learning.Application.ListReadingDocuments;
+using Campfire.Modules.Learning.Application.DeleteReadingDocument;
 using Campfire.Modules.Learning.Application.Models;
 using Campfire.Modules.Learning.Application.PrepareReadingText;
 using Campfire.Modules.Learning.Application.SubmitExercise;
+using Campfire.Modules.Learning.Application.SaveReadingDocument;
 using Campfire.Modules.Learning.Presentation.Endpoints;
 using Campfire.Modules.Learning.Presentation.Models;
 using MediatR;
@@ -31,6 +35,10 @@ public static class LearningEndpoints
         group.MapGet("/vocabulary/mindmap", MindMapAsync).WithName("GetVocabularyMindMap");
         group.MapGet("/capabilities", CapabilitiesAsync).WithName("GetLearningCapabilities");
         group.MapPost("/reading/prepare", PrepareReadingTextAsync).AddEndpointFilter<AntiforgeryEndpointFilter>().WithName("PrepareLearningReadingText");
+        group.MapGet("/reading/documents", ListReadingDocumentsAsync).WithName("ListLearningReadingDocuments");
+        group.MapGet("/reading/documents/{documentId:guid}", GetReadingDocumentAsync).WithName("GetLearningReadingDocument");
+        group.MapPost("/reading/documents", SaveReadingDocumentAsync).AddEndpointFilter<AntiforgeryEndpointFilter>().WithName("SaveLearningReadingDocument");
+        group.MapDelete("/reading/documents/{documentId:guid}", DeleteReadingDocumentAsync).AddEndpointFilter<AntiforgeryEndpointFilter>().WithName("DeleteLearningReadingDocument");
         return endpoints;
     }
 
@@ -42,6 +50,20 @@ public static class LearningEndpoints
     private static async Task<IResult> MindMapAsync(string word, int? hskLevel, int? maxChildren, ClaimsPrincipal principal, ISender sender, HttpContext context, CancellationToken token) => Result(await sender.Send(new GetMindMapQuery(UserId(principal), word, hskLevel ?? 1, maxChildren ?? 8), token), context);
     private static async Task<IResult> CapabilitiesAsync(ISender sender, CancellationToken token) => Results.Ok(await sender.Send(new GetCapabilitiesQuery(), token));
     private static async Task<IResult> PrepareReadingTextAsync(PrepareReadingTextRequest request, ISender sender, HttpContext context, CancellationToken token) => Result(await sender.Send(new PrepareReadingTextCommand(request.Text), token), context);
+    private static async Task<IResult> ListReadingDocumentsAsync(ClaimsPrincipal principal, ISender sender, CancellationToken token) => Results.Ok(await sender.Send(new ListReadingDocumentsQuery(UserId(principal)), token));
+    private static async Task<IResult> GetReadingDocumentAsync(Guid documentId, ClaimsPrincipal principal, ISender sender, HttpContext context, CancellationToken token) => Result(await sender.Send(new GetReadingDocumentQuery(UserId(principal), documentId), token), context);
+    private static async Task<IResult> SaveReadingDocumentAsync(SaveReadingDocumentRequest request, ClaimsPrincipal principal, ISender sender, HttpContext context, CancellationToken token)
+    {
+        var result = await sender.Send(new SaveReadingDocumentCommand(UserId(principal), request.Title, request.Text), token);
+        return result.IsSuccess
+            ? Results.Created($"/api/v1/learning/reading/documents/{result.Value!.Id}", result.Value)
+            : Result(result, context);
+    }
+    private static async Task<IResult> DeleteReadingDocumentAsync(Guid documentId, ClaimsPrincipal principal, ISender sender, HttpContext context, CancellationToken token)
+    {
+        var result = await sender.Send(new DeleteReadingDocumentCommand(UserId(principal), documentId), token);
+        return result.IsSuccess ? Results.NoContent() : Result(result, context);
+    }
 
     private static Guid UserId(ClaimsPrincipal principal) => Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var value) ? value : throw new UnauthorizedAccessException("Invalid identity session.");
     private static IResult Result<T>(LearningResult<T> result, HttpContext context)

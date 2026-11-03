@@ -16,4 +16,6 @@ public static class LearningModels
     public sealed record MindMap(MindMapNode Root, IReadOnlyList<MindMapNode> Children, string Source, bool AiExpansionAvailable);
     public sealed record Capabilities(bool TextToSpeech, bool PronunciationAssessment, bool ConversationAi, bool VocabularyAi, string Message);
     public sealed record PreparedReadingText(string Text, int CharacterCount, int ChineseCharacterCount, string Language);
+    public sealed record ReadingDocumentSummary(Guid Id, string Title, int CharacterCount, int ChineseCharacterCount, DateTimeOffset CreatedAtUtc, DateTimeOffset UpdatedAtUtc);
+    public sealed record ReadingDocumentDetail(Guid Id, string Title, string Text, int CharacterCount, int ChineseCharacterCount, string Language, DateTimeOffset CreatedAtUtc, DateTimeOffset UpdatedAtUtc);
 }

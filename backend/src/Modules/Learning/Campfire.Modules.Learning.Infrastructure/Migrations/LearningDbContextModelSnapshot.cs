@@ -23,7 +23,7 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Course", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Courses.Course", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.CourseUnit", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Courses.CourseUnit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,7 +109,7 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.LearningDay", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Courses.LearningDay", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +191,7 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.LessonActivity", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Courses.LessonActivity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -303,7 +303,7 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.UserActivityProgress", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Progress.UserActivityProgress", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -327,7 +327,7 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.UserCourse", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Progress.UserCourse", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -351,7 +351,7 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.UserLearningDayProgress", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Progress.UserLearningDayProgress", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -390,7 +390,50 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Vocabulary", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Reading.ReadingDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CharacterCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChineseCharacterCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAtUtc");
+
+                    b.ToTable("reading_documents", "learning", t =>
+                        {
+                            t.HasCheckConstraint("CK_reading_documents_CharacterCount", "\"CharacterCount\" BETWEEN 1 AND 10000");
+
+                            t.HasCheckConstraint("CK_reading_documents_ChineseCharacterCount", "\"ChineseCharacterCount\" >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Vocabulary.Vocabulary", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -508,7 +551,7 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.VocabularyRelation", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Vocabulary.VocabularyRelation", b =>
                 {
                     b.Property<Guid>("SourceId")
                         .HasColumnType("uuid");
@@ -564,75 +607,75 @@ namespace Campfire.Modules.Learning.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.CourseUnit", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Courses.CourseUnit", b =>
                 {
-                    b.HasOne("Campfire.Modules.Learning.Domain.Course", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Courses.Course", null)
                         .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.LearningDay", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Courses.LearningDay", b =>
                 {
-                    b.HasOne("Campfire.Modules.Learning.Domain.Course", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Courses.Course", null)
                         .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Campfire.Modules.Learning.Domain.CourseUnit", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Courses.CourseUnit", null)
                         .WithMany()
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.LessonActivity", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Courses.LessonActivity", b =>
                 {
-                    b.HasOne("Campfire.Modules.Learning.Domain.LearningDay", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Courses.LearningDay", null)
                         .WithMany()
                         .HasForeignKey("LearningDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.UserActivityProgress", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Progress.UserActivityProgress", b =>
                 {
-                    b.HasOne("Campfire.Modules.Learning.Domain.LessonActivity", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Courses.LessonActivity", null)
                         .WithMany()
                         .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.UserCourse", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Progress.UserCourse", b =>
                 {
-                    b.HasOne("Campfire.Modules.Learning.Domain.Course", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Courses.Course", null)
                         .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.UserLearningDayProgress", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Progress.UserLearningDayProgress", b =>
                 {
-                    b.HasOne("Campfire.Modules.Learning.Domain.LearningDay", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Courses.LearningDay", null)
                         .WithMany()
                         .HasForeignKey("LearningDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Campfire.Modules.Learning.Domain.VocabularyRelation", b =>
+            modelBuilder.Entity("Campfire.Modules.Learning.Domain.Vocabulary.VocabularyRelation", b =>
                 {
-                    b.HasOne("Campfire.Modules.Learning.Domain.Vocabulary", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Vocabulary.Vocabulary", null)
                         .WithMany()
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Campfire.Modules.Learning.Domain.Vocabulary", null)
+                    b.HasOne("Campfire.Modules.Learning.Domain.Vocabulary.Vocabulary", null)
                         .WithMany()
                         .HasForeignKey("TargetId")
                         .OnDelete(DeleteBehavior.Restrict)

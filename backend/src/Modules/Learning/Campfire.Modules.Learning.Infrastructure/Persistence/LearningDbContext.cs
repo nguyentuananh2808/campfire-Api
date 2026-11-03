@@ -1,6 +1,7 @@
 using Campfire.Modules.Learning.Contracts;
 using Campfire.Modules.Learning.Domain.Courses;
 using Campfire.Modules.Learning.Domain.Progress;
+using Campfire.Modules.Learning.Domain.Reading;
 using Campfire.Modules.Learning.Domain.Vocabulary;
 using Campfire.Modules.Learning.Infrastructure.Persistence.Seed;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ public sealed class LearningDbContext(DbContextOptions<LearningDbContext> option
     public DbSet<UserActivityProgress> ActivityProgress => Set<UserActivityProgress>();
     public DbSet<Vocabulary> Vocabularies => Set<Vocabulary>();
     public DbSet<VocabularyRelation> VocabularyRelations => Set<VocabularyRelation>();
+    public DbSet<ReadingDocument> ReadingDocuments => Set<ReadingDocument>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
