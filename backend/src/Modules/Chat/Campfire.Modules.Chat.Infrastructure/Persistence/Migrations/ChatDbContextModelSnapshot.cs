@@ -103,6 +103,24 @@ namespace Campfire.Modules.Chat.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Campfire.Modules.Chat.Domain.ReadStates.ChatReadState", b =>
+                {
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastReadAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("GroupId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ReadStates", "chat");
+                });
+
             modelBuilder.Entity("Campfire.Modules.Chat.Domain.Messages.ChatMessage", b =>
                 {
                     b.HasOne("Campfire.Modules.Chat.Domain.Messages.ChatMessage", null)

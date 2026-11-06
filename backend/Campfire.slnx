@@ -31,6 +31,13 @@
     <Project Path="src/Modules/Groups/Campfire.Modules.Groups.Infrastructure/Campfire.Modules.Groups.Infrastructure.csproj" />
     <Project Path="src/Modules/Groups/Campfire.Modules.Groups.Presentation/Campfire.Modules.Groups.Presentation.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Games/">
+    <Project Path="src/Modules/Games/Campfire.Modules.Games.Application/Campfire.Modules.Games.Application.csproj" />
+    <Project Path="src/Modules/Games/Campfire.Modules.Games.Contracts/Campfire.Modules.Games.Contracts.csproj" />
+    <Project Path="src/Modules/Games/Campfire.Modules.Games.Domain/Campfire.Modules.Games.Domain.csproj" />
+    <Project Path="src/Modules/Games/Campfire.Modules.Games.Infrastructure/Campfire.Modules.Games.Infrastructure.csproj" />
+    <Project Path="src/Modules/Games/Campfire.Modules.Games.Presentation/Campfire.Modules.Games.Presentation.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Identity/">
     <Project Path="src/Modules/Identity/Campfire.Modules.Identity.Application/Campfire.Modules.Identity.Application.csproj" />
     <Project Path="src/Modules/Identity/Campfire.Modules.Identity.Contracts/Campfire.Modules.Identity.Contracts.csproj" />

@@ -3,6 +3,7 @@ using Campfire.Modules.Chat.Application.Common;
 using Campfire.Modules.Chat.Application.Models;
 using Campfire.Modules.Chat.Contracts;
 using Campfire.Modules.Chat.Domain.Messages;
+using Campfire.Modules.Chat.Domain.ReadStates;
 using Campfire.Modules.Chat.Infrastructure.Persistence;
 using Campfire.Modules.Groups.Contracts;
 using Campfire.Modules.Identity.Contracts;
@@ -24,6 +25,109 @@ public sealed class EfChatMessageService(
 {
     private readonly string imageRoot = Path.Combine(
         configuration["MediaStorage:RootPath"] ?? Path.Combine(AppContext.BaseDirectory, "media"), "chat");
+
+    public async Task<IReadOnlyList<ChatInboxItem>> GetInboxAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var groupIds = await membershipService.GetGroupIdsAsync(userId, cancellationToken);
+        if (groupIds.Count == 0) return [];
+
+        var latestMessages = await dbContext.Messages
+            .AsNoTracking()
+            .Where(message => groupIds.Contains(message.GroupId))
+            .GroupBy(message => message.GroupId)
+            .Select(group => group
+                .OrderByDescending(message => message.SentAtUtc)
+                .ThenByDescending(message => message.Id)
+                .First())
+            .ToListAsync(cancellationToken);
+
+        var unreadCounts = await (
+                from message in dbContext.Messages.AsNoTracking()
+                join readState in dbContext.ReadStates
+                        .AsNoTracking()
+                        .Where(state => state.UserId == userId)
+                    on message.GroupId equals readState.GroupId into readStates
+                from readState in readStates.DefaultIfEmpty()
+                where groupIds.Contains(message.GroupId) &&
+                      message.SenderUserId != userId &&
+                      (readState == null || message.SentAtUtc > readState.LastReadAtUtc)
+                group message by message.GroupId
+                into unreadGroup
+                select new { GroupId = unreadGroup.Key, Count = unreadGroup.Count() })
+            .ToDictionaryAsync(item => item.GroupId, item => item.Count, cancellationToken);
+
+        var profiles = await profileReader.GetByIdsAsync(
+            latestMessages.Select(message => message.SenderUserId).Distinct().ToArray(),
+            cancellationToken);
+        var latestByGroup = latestMessages.ToDictionary(message => message.GroupId);
+
+        return groupIds
+            .Select(groupId => latestByGroup.TryGetValue(groupId, out var message)
+                ? new ChatInboxItem(
+                    groupId,
+                    message.Id,
+                    DisplayName(message.SenderUserId, profiles),
+                    message.Kind.ToString(),
+                    InboxPreview(message),
+                    message.SentAtUtc,
+                    unreadCounts.GetValueOrDefault(groupId))
+                : new ChatInboxItem(groupId, null, null, null, null, null, 0))
+            .OrderByDescending(item => item.LastMessageAtUtc)
+            .ThenBy(item => item.GroupId)
+            .ToArray();
+    }
+
+    public async Task<ChatResult<DateTimeOffset>> MarkReadAsync(
+        Guid groupId,
+        Guid userId,
+        Guid messageId,
+        CancellationToken cancellationToken)
+    {
+        if (!(await membershipService.GetAccessAsync(groupId, userId, cancellationToken)).IsMember)
+            return ChatResult<DateTimeOffset>.Failed(ChatFailures.HiddenGroup());
+
+        var lastReadAtUtc = await dbContext.Messages
+            .AsNoTracking()
+            .Where(message => message.Id == messageId && message.GroupId == groupId)
+            .Select(message => (DateTimeOffset?)message.SentAtUtc)
+            .SingleOrDefaultAsync(cancellationToken);
+        if (!lastReadAtUtc.HasValue)
+            return ChatResult<DateTimeOffset>.Failed(ChatFailures.ReadMarkerNotFound());
+
+        var updated = await dbContext.ReadStates
+            .Where(state => state.GroupId == groupId &&
+                            state.UserId == userId &&
+                            state.LastReadAtUtc < lastReadAtUtc.Value)
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(state => state.LastReadAtUtc, lastReadAtUtc.Value),
+                cancellationToken);
+
+        if (updated == 0 && !await dbContext.ReadStates
+                .AsNoTracking()
+                .AnyAsync(state => state.GroupId == groupId && state.UserId == userId, cancellationToken))
+        {
+            dbContext.ReadStates.Add(ChatReadState.Create(groupId, userId, lastReadAtUtc.Value));
+            try
+            {
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException)
+            {
+                dbContext.ChangeTracker.Clear();
+                await dbContext.ReadStates
+                    .Where(state => state.GroupId == groupId &&
+                                    state.UserId == userId &&
+                                    state.LastReadAtUtc < lastReadAtUtc.Value)
+                    .ExecuteUpdateAsync(
+                        setters => setters.SetProperty(state => state.LastReadAtUtc, lastReadAtUtc.Value),
+                        cancellationToken);
+            }
+        }
+
+        return ChatResult<DateTimeOffset>.Success(lastReadAtUtc.Value);
+    }
 
     public async Task<ChatResult<SendMessageResult>> SendImageAsync(Guid groupId, Guid userId,
         Guid clientMessageId, ChatImageUpload image, Guid? replyToMessageId, CancellationToken cancellationToken)
@@ -333,4 +437,12 @@ public sealed class EfChatMessageService(
         ? "Ảnh"
         : message.Kind is ChatMessageKind.Sticker ? message.Content
         : message.Content.Length <= 160 ? message.Content : $"{message.Content[..157]}...";
+
+    private static string InboxPreview(ChatMessage message) => message.Kind switch
+    {
+        ChatMessageKind.Image => "Đã gửi một ảnh",
+        ChatMessageKind.Sticker => "Đã gửi một sticker",
+        _ when message.Content.Length <= 80 => message.Content,
+        _ => $"{message.Content[..77]}..."
+    };
 }

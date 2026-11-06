@@ -5,6 +5,8 @@ using Campfire.Modules.Chat.Application.SendMessage;
 using Campfire.Modules.Chat.Application.SetReaction;
 using Campfire.Modules.Chat.Application.SendImage;
 using Campfire.Modules.Chat.Application.GetImage;
+using Campfire.Modules.Chat.Application.GetInbox;
+using Campfire.Modules.Chat.Application.MarkRead;
 using Campfire.Modules.Chat.Presentation.Endpoints;
 using Campfire.Modules.Chat.Presentation.Models;
 using MediatR;
@@ -19,6 +21,10 @@ public static class ChatEndpoints
 {
     public static IEndpointRouteBuilder MapChatEndpoints(this IEndpointRouteBuilder endpoints)
     {
+        endpoints.MapGet("/api/v1/chat/inbox", GetInboxAsync)
+            .WithTags("Chat")
+            .RequireAuthorization()
+            .WithName("GetChatInbox");
         var messages = endpoints.MapGroup("/api/v1/groups/{groupId:guid}/messages")
             .WithTags("Chat").RequireAuthorization();
         messages.MapGet("/", GetMessagesAsync).WithName("GetGroupMessages");
@@ -27,6 +33,9 @@ public static class ChatEndpoints
         messages.MapPost("/image", SendImageAsync).AddEndpointFilter<AntiforgeryEndpointFilter>()
             .RequireRateLimiting("chat").WithMetadata(new RequestSizeLimitAttribute(1_200_000)).WithName("SendGroupImage");
         messages.MapGet("/{messageId:guid}/image", GetImageAsync).WithName("GetGroupImage");
+        messages.MapPut("/read", MarkReadAsync)
+            .AddEndpointFilter<AntiforgeryEndpointFilter>()
+            .WithName("MarkGroupMessagesRead");
         messages.MapPut("/{messageId:guid}/reaction", SetReactionAsync)
             .AddEndpointFilter<AntiforgeryEndpointFilter>()
             .RequireRateLimiting("chat").WithName("SetGroupMessageReaction");
@@ -34,6 +43,33 @@ public static class ChatEndpoints
             .AddEndpointFilter<AntiforgeryEndpointFilter>()
             .RequireRateLimiting("chat").WithName("EditGroupMessage");
         return endpoints;
+    }
+
+    private static async Task<IResult> GetInboxAsync(
+        ClaimsPrincipal principal,
+        ISender sender,
+        HttpContext context,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(principal, out var userId)) return ChatEndpointResults.InvalidSession(context);
+        return Results.Ok(await sender.Send(new GetChatInboxQuery(userId), cancellationToken));
+    }
+
+    private static async Task<IResult> MarkReadAsync(
+        Guid groupId,
+        MarkGroupReadRequest request,
+        ClaimsPrincipal principal,
+        ISender sender,
+        HttpContext context,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(principal, out var userId)) return ChatEndpointResults.InvalidSession(context);
+        var result = await sender.Send(
+            new MarkGroupReadCommand(groupId, userId, request.MessageId),
+            cancellationToken);
+        return result.IsSuccess
+            ? Results.Ok(new { lastReadAtUtc = result.Value })
+            : ChatEndpointResults.Failure(result, context);
     }
 
     private static async Task<IResult> SendImageAsync(Guid groupId, ClaimsPrincipal principal, ISender sender,

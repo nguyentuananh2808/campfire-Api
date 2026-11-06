@@ -22,6 +22,8 @@
     <ProjectReference Include="..\..\Modules\Chat\Campfire.Modules.Chat.Presentation\Campfire.Modules.Chat.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Events\Campfire.Modules.Events.Infrastructure\Campfire.Modules.Events.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Events\Campfire.Modules.Events.Presentation\Campfire.Modules.Events.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Games\Campfire.Modules.Games.Infrastructure\Campfire.Modules.Games.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Games\Campfire.Modules.Games.Presentation\Campfire.Modules.Games.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Werewolf\Campfire.Modules.Werewolf.Infrastructure\Campfire.Modules.Werewolf.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Werewolf\Campfire.Modules.Werewolf.Presentation\Campfire.Modules.Werewolf.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\StrangerChat\Campfire.Modules.StrangerChat.Infrastructure\Campfire.Modules.StrangerChat.Infrastructure.csproj" />

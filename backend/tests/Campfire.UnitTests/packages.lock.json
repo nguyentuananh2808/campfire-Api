@@ -119,6 +119,9 @@
       "campfire.modules.events.domain": {
         "type": "Project"
       },
+      "campfire.modules.games.domain": {
+        "type": "Project"
+      },
       "campfire.modules.groups.application": {
         "type": "Project",
         "dependencies": {

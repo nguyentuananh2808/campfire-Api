@@ -19,3 +19,4 @@ TestResults/
 *.suo
 playwright-report/
 test-results/
+.backend-publish/

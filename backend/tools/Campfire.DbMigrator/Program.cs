@@ -1,6 +1,7 @@
 using Campfire.Modules.Chat.Infrastructure.Persistence;
 using Campfire.Modules.Events.Infrastructure.Persistence;
 using Campfire.Modules.Groups.Infrastructure.Persistence;
+using Campfire.Modules.Games.Infrastructure.Persistence;
 using Campfire.Modules.Identity.Infrastructure.Persistence;
 using Campfire.Modules.Werewolf.Infrastructure.Persistence;
 using Campfire.Modules.StrangerChat.Infrastructure.Persistence;
@@ -29,6 +30,9 @@ try
     await using var eventsDbContext = new EventsDbContextFactory().CreateDbContext(args);
     await eventsDbContext.Database.MigrateAsync(cancellationSource.Token);
     Console.WriteLine("Events migrations applied successfully.");
+    await using var gamesDbContext = new GamesDbContextFactory().CreateDbContext(args);
+    await gamesDbContext.Database.MigrateAsync(cancellationSource.Token);
+    Console.WriteLine("Games migrations applied successfully.");
     await using var werewolfDbContext = new WerewolfDbContextFactory().CreateDbContext(args);
     await werewolfDbContext.Database.MigrateAsync(cancellationSource.Token);
     Console.WriteLine("Werewolf migrations applied successfully.");

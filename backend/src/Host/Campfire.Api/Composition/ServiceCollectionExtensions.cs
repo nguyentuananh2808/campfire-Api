@@ -8,6 +8,8 @@ using Campfire.Modules.Events.Infrastructure;
 using Campfire.Modules.Events.Presentation;
 using Campfire.Modules.Groups.Infrastructure;
 using Campfire.Modules.Groups.Presentation;
+using Campfire.Modules.Games.Infrastructure;
+using Campfire.Modules.Games.Presentation;
 using Campfire.Modules.Identity.Infrastructure;
 using Campfire.Modules.Identity.Presentation;
 using Campfire.Modules.Learning.Infrastructure;
@@ -41,6 +43,7 @@ public static class ServiceCollectionExtensions
         services.AddExceptionHandler<GroupsValidationExceptionHandler>();
         services.AddExceptionHandler<ChatValidationExceptionHandler>();
         services.AddExceptionHandler<EventsValidationExceptionHandler>();
+        services.AddExceptionHandler<GamesValidationExceptionHandler>();
         services.AddExceptionHandler<WerewolfValidationExceptionHandler>();
         services.AddExceptionHandler<StrangerChatValidationExceptionHandler>();
         services.AddExceptionHandler<LearningValidationExceptionHandler>();
@@ -59,6 +62,7 @@ public static class ServiceCollectionExtensions
         services.AddGroupsModule(configuration);
         services.AddChatModule(configuration);
         services.AddEventsModule(configuration);
+        services.AddGamesModule(configuration);
         services.AddWerewolfModule(configuration);
         services.AddStrangerChatModule(configuration);
         services.AddLearningModule(configuration);

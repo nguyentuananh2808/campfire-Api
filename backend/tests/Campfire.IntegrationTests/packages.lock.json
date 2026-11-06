@@ -753,6 +753,8 @@
           "Campfire.Modules.Chat.Presentation": "[1.0.0, )",
           "Campfire.Modules.Events.Infrastructure": "[1.0.0, )",
           "Campfire.Modules.Events.Presentation": "[1.0.0, )",
+          "Campfire.Modules.Games.Infrastructure": "[1.0.0, )",
+          "Campfire.Modules.Games.Presentation": "[1.0.0, )",
           "Campfire.Modules.Groups.Infrastructure": "[1.0.0, )",
           "Campfire.Modules.Groups.Presentation": "[1.0.0, )",
           "Campfire.Modules.Identity.Infrastructure": "[1.0.0, )",
@@ -870,6 +872,47 @@
           "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
           "Campfire.Modules.Events.Application": "[1.0.0, )",
           "Campfire.Modules.Events.Contracts": "[1.0.0, )",
+          "FluentValidation": "[12.0.0, )",
+          "MediatR": "[12.5.0, )"
+        }
+      },
+      "campfire.modules.games.application": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Application": "[1.0.0, )",
+          "Campfire.Modules.Games.Contracts": "[1.0.0, )",
+          "Campfire.Modules.Games.Domain": "[1.0.0, )",
+          "FluentValidation": "[12.0.0, )",
+          "FluentValidation.DependencyInjectionExtensions": "[12.0.0, )",
+          "MediatR": "[12.5.0, )"
+        }
+      },
+      "campfire.modules.games.contracts": {
+        "type": "Project"
+      },
+      "campfire.modules.games.domain": {
+        "type": "Project"
+      },
+      "campfire.modules.games.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Infrastructure": "[1.0.0, )",
+          "Campfire.Modules.Games.Application": "[1.0.0, )",
+          "Campfire.Modules.Games.Contracts": "[1.0.0, )",
+          "Campfire.Modules.Games.Domain": "[1.0.0, )",
+          "Campfire.Modules.Groups.Contracts": "[1.0.0, )",
+          "Campfire.Modules.Identity.Contracts": "[1.0.0, )",
+          "Microsoft.EntityFrameworkCore": "[10.0.12, )",
+          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.0.12, )",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+        }
+      },
+      "campfire.modules.games.presentation": {
+        "type": "Project",
+        "dependencies": {
+          "Campfire.BuildingBlocks.Presentation": "[1.0.0, )",
+          "Campfire.Modules.Games.Application": "[1.0.0, )",
+          "Campfire.Modules.Games.Contracts": "[1.0.0, )",
           "FluentValidation": "[12.0.0, )",
           "MediatR": "[12.5.0, )"
         }

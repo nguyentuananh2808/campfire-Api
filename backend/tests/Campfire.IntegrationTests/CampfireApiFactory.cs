@@ -1,6 +1,7 @@
 using Campfire.Modules.Chat.Infrastructure.Persistence;
 using Campfire.Modules.Events.Infrastructure.Persistence;
 using Campfire.Modules.Groups.Infrastructure.Persistence;
+using Campfire.Modules.Games.Infrastructure.Persistence;
 using Campfire.Modules.Identity.Infrastructure.Persistence;
 using Campfire.Modules.StrangerChat.Infrastructure.Persistence;
 using Campfire.Modules.Werewolf.Application.Abstractions;
@@ -37,6 +38,8 @@ public sealed class CampfireApiFactory : WebApplicationFactory<Program>, IAsyncL
         await chatDbContext.Database.MigrateAsync();
         var eventsDbContext = scope.ServiceProvider.GetRequiredService<EventsDbContext>();
         await eventsDbContext.Database.MigrateAsync();
+        var gamesDbContext = scope.ServiceProvider.GetRequiredService<GamesDbContext>();
+        await gamesDbContext.Database.MigrateAsync();
         var werewolfDbContext = scope.ServiceProvider.GetRequiredService<WerewolfDbContext>();
         await werewolfDbContext.Database.MigrateAsync();
         var strangerChatDbContext = scope.ServiceProvider.GetRequiredService<StrangerChatDbContext>();

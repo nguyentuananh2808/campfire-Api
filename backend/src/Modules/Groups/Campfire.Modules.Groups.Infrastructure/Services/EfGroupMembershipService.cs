@@ -7,6 +7,15 @@ namespace Campfire.Modules.Groups.Infrastructure.Services;
 
 public sealed class EfGroupMembershipService(GroupsDbContext dbContext) : IGroupMembershipService
 {
+    public async Task<IReadOnlyList<Guid>> GetGroupIdsAsync(
+        Guid userId,
+        CancellationToken cancellationToken) =>
+        await dbContext.Memberships
+            .AsNoTracking()
+            .Where(membership => membership.UserId == userId)
+            .Select(membership => membership.GroupId)
+            .ToListAsync(cancellationToken);
+
     public async Task<GroupAccess> GetAccessAsync(
         Guid groupId,
         Guid userId,

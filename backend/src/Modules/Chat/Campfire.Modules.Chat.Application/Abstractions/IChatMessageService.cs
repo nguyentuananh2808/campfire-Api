@@ -6,6 +6,12 @@ namespace Campfire.Modules.Chat.Application.Abstractions;
 
 public interface IChatMessageService
 {
+    Task<IReadOnlyList<ChatInboxItem>> GetInboxAsync(Guid userId, CancellationToken cancellationToken);
+    Task<ChatResult<DateTimeOffset>> MarkReadAsync(
+        Guid groupId,
+        Guid userId,
+        Guid messageId,
+        CancellationToken cancellationToken);
     Task<ChatResult<SendMessageResult>> SendImageAsync(Guid groupId, Guid userId, Guid clientMessageId, ChatImageUpload image, Guid? replyToMessageId, CancellationToken cancellationToken);
     Task<ChatResult<ChatImageContent>> GetImageAsync(Guid groupId, Guid messageId, Guid userId, CancellationToken cancellationToken);
     Task<ChatResult<SendMessageResult>> SendAsync(Guid groupId, Guid userId, Guid clientMessageId, string kind, string content, Guid? replyToMessageId, CancellationToken cancellationToken);

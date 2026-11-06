@@ -10,6 +10,59 @@ namespace Campfire.IntegrationTests;
 public sealed class ChatApiTests(CampfireApiFactory factory) : IClassFixture<CampfireApiFactory>
 {
     [Fact]
+    public async Task Inbox_persists_unread_counts_and_mark_read_is_member_scoped()
+    {
+        using var owner = factory.CreateClient();
+        using var member = factory.CreateClient();
+        using var outsider = factory.CreateClient();
+        await RegisterAsync(owner, "Chủ nhóm");
+        await RegisterAsync(member, "Thành viên");
+        await RegisterAsync(outsider, "Người ngoài");
+
+        var groupResponse = await owner.PostAsJsonAsync("/api/v1/groups", new { name = "Hội cuối tuần" });
+        var groupId = GetGuid(await groupResponse.Content.ReadAsStringAsync(), "id");
+        var invitation = await owner.PostAsJsonAsync(
+            $"/api/v1/groups/{groupId}/invitations",
+            new { expiresInHours = 1 });
+        var token = GetString(await invitation.Content.ReadAsStringAsync(), "token");
+        Assert.Equal(
+            HttpStatusCode.OK,
+            (await member.PostAsJsonAsync("/api/v1/group-invitations/join", new { token })).StatusCode);
+
+        await owner.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new
+        {
+            clientMessageId = Guid.NewGuid(),
+            content = "Tin thứ nhất"
+        });
+        var latestResponse = await owner.PostAsJsonAsync($"/api/v1/groups/{groupId}/messages", new
+        {
+            clientMessageId = Guid.NewGuid(),
+            content = "Tin mới nhất"
+        });
+        var latestMessageId = (await latestResponse.Content.ReadFromJsonAsync<JsonElement>())
+            .GetProperty("id").GetGuid();
+
+        var inbox = await member.GetFromJsonAsync<JsonElement[]>("/api/v1/chat/inbox");
+        var groupInbox = Assert.Single(inbox!);
+        Assert.Equal(groupId, groupInbox.GetProperty("groupId").GetGuid());
+        Assert.Equal(2, groupInbox.GetProperty("unreadCount").GetInt32());
+        Assert.Equal("Tin mới nhất", groupInbox.GetProperty("lastMessagePreview").GetString());
+
+        var marked = await member.PutAsJsonAsync(
+            $"/api/v1/groups/{groupId}/messages/read",
+            new { messageId = latestMessageId });
+        Assert.Equal(HttpStatusCode.OK, marked.StatusCode);
+        inbox = await member.GetFromJsonAsync<JsonElement[]>("/api/v1/chat/inbox");
+        Assert.Equal(0, Assert.Single(inbox!).GetProperty("unreadCount").GetInt32());
+
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            (await outsider.PutAsJsonAsync(
+                $"/api/v1/groups/{groupId}/messages/read",
+                new { messageId = latestMessageId })).StatusCode);
+    }
+
+    [Fact]
     public async Task Send_is_member_scoped_idempotent_and_conflicts_for_changed_payload()
     {
         using var member = factory.CreateClient();
